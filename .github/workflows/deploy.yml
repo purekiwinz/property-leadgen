@@ -52,16 +52,29 @@ jobs:
             "https://api.github.com/user/packages/container/property-leadgen/visibility" \
             -d '{"visibility":"public"}' || true
 
-      - name: Redeploy on Hostinger
+      - name: Redeploy autoagent stack on Hostinger
         run: |
-          COMPOSE=$(python3 -c "
-          import json
-          with open('docker-compose.prod.yml') as f:
-              content = f.read()
-          print(json.dumps(content))
-          ")
-          curl -s -X POST \
-            -H "Authorization: Bearer ${{ secrets.HOSTINGER_API_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d "{\"project_name\":\"property-leadgen\",\"content\":$COMPOSE}" \
-            "https://developers.hostinger.com/api/vps/v1/virtual-machines/1244831/docker"
+          python3 - << 'EOF'
+          import json, urllib.request
+
+          api = "https://developers.hostinger.com"
+          vm_id = "1244831"
+          token = "${{ secrets.HOSTINGER_API_TOKEN }}"
+          headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+
+          # GET current autoagent compose from Hostinger
+          req = urllib.request.Request(f"{api}/api/vps/v1/virtual-machines/{vm_id}/docker/autoagent", headers=headers)
+          with urllib.request.urlopen(req) as r:
+              current = json.loads(r.read())
+
+          # POST it back to trigger docker compose pull + up
+          payload = json.dumps({
+              "project_name": "autoagent",
+              "content": current["content"],
+              "environment": current["environment"]
+          }).encode()
+          req = urllib.request.Request(f"{api}/api/vps/v1/virtual-machines/{vm_id}/docker", data=payload, headers=headers, method="POST")
+          with urllib.request.urlopen(req) as r:
+              result = json.loads(r.read())
+          print(json.dumps(result, indent=2))
+          EOF
