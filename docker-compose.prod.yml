@@ -1,0 +1,23 @@
+services:
+  app:
+    image: ghcr.io/purekiwinz/property-leadgen:latest
+    restart: unless-stopped
+    networks:
+      - autoagent_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.property-leadgen.rule=Host(`leads.edscanlan.co.nz`)"
+      - "traefik.http.routers.property-leadgen.entrypoints=websecure"
+      - "traefik.http.routers.property-leadgen.tls.certresolver=letsencrypt"
+      - "traefik.http.services.property-leadgen.loadbalancer.server.port=3000"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:3000 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+networks:
+  autoagent_network:
+    external: true
+    name: autoagent_autoagent_network
