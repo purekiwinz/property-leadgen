@@ -66,6 +66,7 @@ export default async function Home() {
               src="/agent_transparent.png"
               alt={agentName}
               fill
+              unoptimized
               className="object-contain object-bottom brightness-100 contrast-95"
             />
           </div>
@@ -85,10 +86,11 @@ export default async function Home() {
               
               {/* Mobile/Tablet Only: Ed's Image */}
               <div className="lg:hidden relative w-48 h-48 mx-auto mb-6 bg-slate-100 rounded-full overflow-hidden border-4 border-white shadow-xl">
-                 <Image 
+                 <Image
                     src="/agent_transparent.png"
                     alt={agentName}
                     fill
+                    unoptimized
                     className="object-cover scale-[1.3] brightness-110"
                     style={{ objectPosition: 'center -23%' }}
                  />
@@ -299,6 +301,7 @@ export default async function Home() {
                   src="/agent_transparent.png"
                   alt={agentName}
                   fill
+                  unoptimized
                   className="object-cover scale-[1.3] brightness-110"
                   style={{ objectPosition: 'center -23%' }}
                 />
