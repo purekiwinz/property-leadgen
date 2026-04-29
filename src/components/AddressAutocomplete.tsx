@@ -3,20 +3,14 @@
 import { MapPin, Loader2, LocateFixed } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 
-// Hibiscus Coast bounding box (lon/lat)
-const HC_BOUNDS = { minLon: 174.5, maxLon: 174.95, minLat: -36.82, maxLat: -36.44 };
 // Centre point used as proximity fallback when no user location
 const HC_CENTRE = "174.6955,-36.6016";
-
-function isInHibiscusCoast(lon: number, lat: number) {
-  return lon >= HC_BOUNDS.minLon && lon <= HC_BOUNDS.maxLon &&
-         lat >= HC_BOUNDS.minLat && lat <= HC_BOUNDS.maxLat;
-}
 
 export default function AddressAutocomplete(props: {
   value: string;
   onChange: (val: string) => void;
   onSelect: (address: string) => void;
+  placeholder?: string;
 }) {
   const [inputValue, setInputValue] = useState(props.value);
   const [suggestions, setSuggestions] = useState<any[]>([]);
@@ -35,26 +29,6 @@ export default function AddressAutocomplete(props: {
         const { longitude: lon, latitude: lat } = pos.coords;
         proximityRef.current = `${lon},${lat}`;
         setLocating(false);
-
-        if (!isInHibiscusCoast(lon, lat)) return;
-
-        // Reverse geocode to get street address
-        const apiKey = process.env.NEXT_PUBLIC_MAPBOX_API_KEY;
-        if (!apiKey) return;
-        try {
-          const res = await fetch(
-            `https://api.mapbox.com/geocoding/v5/mapbox.places/${lon},${lat}.json?types=address&access_token=${apiKey}&limit=1`
-          );
-          const data = await res.json();
-          const place = data.features?.[0];
-          if (place) {
-            const clean = place.place_name.replace(", New Zealand", "");
-            setInputValue(clean);
-            props.onChange(clean);
-          }
-        } catch {
-          // silently ignore
-        }
       },
       () => setLocating(false),
       { timeout: 8000 }
@@ -115,8 +89,8 @@ export default function AddressAutocomplete(props: {
         type="text"
         name="address_search"
         autoComplete="off"
-        placeholder="e.g. 8 Neaptide Close, Red Beach"
-        className="w-full pl-12 pr-12 py-4 border-2 border-white/20 rounded-xl text-lg focus:outline-none focus:border-[#FF4753] focus:ring-1 focus:ring-[#FF4753] transition-colors bg-white/10 text-white placeholder:text-white/40"
+        placeholder={props.placeholder ?? "e.g. 8 Neaptide Close, Red Beach"}
+        className="w-full pl-12 pr-12 py-4 border-2 border-white/20 rounded-xl text-sm sm:text-lg focus:outline-none focus:border-[#FF4753] focus:ring-1 focus:ring-[#FF4753] transition-colors bg-white/10 text-white placeholder:text-white/40"
         value={inputValue}
         onChange={handleInputChange}
         autoFocus

@@ -16,6 +16,18 @@ type FormData = {
   phone: string;
 };
 
+const SUBURB_PLACEHOLDER: Record<string, string> = {
+  'Orewa':     'e.g. 24 Moana Avenue, Orewa',
+  'Millwater': 'e.g. 15 Millwater Parkway, Millwater',
+  'Milldale':  'e.g. 8 Argent Lane, Milldale',
+  'Red Beach': 'e.g. 42 Red Beach Road, Red Beach',
+  'Stanmore Bay':    'e.g. 18 Laurence Street, Stanmore Bay',
+  'Whangaparaoa':   'e.g. 5 Hibiscus Coast Highway, Whangaparaoa',
+  'Gulf Harbour':   'e.g. 12 Fairway Drive, Gulf Harbour',
+  'Hatfields Beach': 'e.g. 9 Hamatana Road, Hatfields Beach',
+  'Silverdale':     'e.g. 3 Silverdale Street, Silverdale',
+};
+
 const HIBISCUS_COAST_SUBURBS = [
   'orewa', 'red beach', 'stanmore bay', 'manly', 'whangaparaoa',
   'gulf harbour', 'arkles bay', 'tindalls', 'matakatia', 'hobbs bay',
@@ -153,14 +165,14 @@ export default function LeadGenForm({ suburb = '', medium = '' }: { suburb?: str
               className="space-y-3 sm:space-y-5"
             >
               <div className="text-center space-y-2 sm:space-y-3">
-                <h1 className="text-xl sm:text-3xl font-black text-white leading-tight text-balance">
+                <h1 className="text-xl sm:text-3xl font-black text-white leading-tight">
                   {suburb ? (
-                    <>What&apos;s your{" "}
+                    <>What&apos;s your<br />
                       <span style={{ fontStyle: 'italic', fontWeight: 400, color: '#FF4753', fontFamily: 'var(--font-source-serif)' }}>{suburb}</span>
                       {" "}home worth?
                     </>
                   ) : (
-                    <>What&apos;s your home worth in{" "}
+                    <>What&apos;s your home worth in<br />
                       <span style={{ fontStyle: 'italic', fontWeight: 400, color: '#FF4753', fontFamily: 'var(--font-source-serif)' }}>today&apos;s market?</span>
                     </>
                   )}
@@ -178,6 +190,8 @@ export default function LeadGenForm({ suburb = '', medium = '' }: { suburb?: str
                   value={formData.address}
                   onChange={(val) => { updateForm("address", val); setShowAreaWarning(false); }}
                   onSelect={handleAddressNext}
+                  placeholder={suburb ? SUBURB_PLACEHOLDER[suburb] : undefined}
+
                 />
               </div>
 
