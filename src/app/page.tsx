@@ -63,7 +63,7 @@ export default async function Home() {
           <div className="absolute bottom-0 left-0 w-1/2 hidden lg:block pointer-events-none z-10"
             style={{ height: '78%', maskImage: 'linear-gradient(to right, transparent 0%, black 30%)' }}>
             <Image
-              src="/agent_transparent.png"
+              src="/agent_transparent.webp"
               alt={agentName}
               fill
               unoptimized
@@ -87,7 +87,7 @@ export default async function Home() {
               {/* Mobile/Tablet Only: Ed's Image */}
               <div className="lg:hidden relative w-48 h-48 mx-auto mb-6 bg-slate-100 rounded-full overflow-hidden border-4 border-white shadow-xl">
                  <Image
-                    src="/agent_transparent.png"
+                    src="/agent_transparent.webp"
                     alt={agentName}
                     fill
                     unoptimized
@@ -298,7 +298,7 @@ export default async function Home() {
               </div>
               <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-white/60 shadow-lg shrink-0 bg-slate-100">
                 <Image
-                  src="/agent_transparent.png"
+                  src="/agent_transparent.webp"
                   alt={agentName}
                   fill
                   unoptimized
