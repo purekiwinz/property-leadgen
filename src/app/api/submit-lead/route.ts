@@ -127,7 +127,7 @@ async function pushToHubSpot(data: {
         ],
       }),
     }),
-    data.suburb ? createHubSpotNote(token, contact.id, data.suburb) : Promise.resolve(),
+    data.suburb ? createHubSpotNote(token, contact.id, data.suburb, data.medium) : Promise.resolve(),
   ]);
 }
 
