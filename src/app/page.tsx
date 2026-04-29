@@ -8,7 +8,9 @@ import { supabase } from "@/lib/supabase";
 
 export const revalidate = 0; // Disable static caching so it always gets latest settings
 
-export default async function Home() {
+export default async function Home({ searchParams }: { searchParams: Promise<{ suburb?: string }> }) {
+  const { suburb: rawSuburb } = await searchParams;
+  const suburb = rawSuburb || '';
   // Fetch dynamic data from Supabase
   const { data: settings } = await supabase.from('site_settings').select('*').eq('id', 1).single();
   const { data: rawSales } = await supabase.from('recent_sales').select('*');
@@ -74,7 +76,7 @@ export default async function Home() {
           {/* Form — centred on right half */}
           <div className="w-full max-w-7xl mx-auto relative z-20 flex flex-col lg:flex-row items-center justify-end h-full pt-16 pb-10">
             <div className="w-full md:w-[540px] lg:w-[600px] shrink-0 my-6 lg:my-0">
-              <LeadGenForm />
+              <LeadGenForm suburb={suburb} />
             </div>
           </div>
         </div>

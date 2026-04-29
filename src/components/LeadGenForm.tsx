@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, User, Mail, Phone, Home, ShieldCheck, CheckCircle2, Loader2 } from "lucide-react";
 import AddressAutocomplete from "./AddressAutocomplete";
@@ -28,8 +28,14 @@ function isHibiscusCoast(address: string): boolean {
   return HIBISCUS_COAST_SUBURBS.some((suburb) => lower.includes(suburb));
 }
 
-export default function LeadGenForm() {
+export default function LeadGenForm({ suburb = '' }: { suburb?: string }) {
   const [step, setStep] = useState(1);
+
+  useEffect(() => {
+    if (suburb && typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('track', 'ViewContent', { content_name: suburb, content_category: 'suburb' });
+    }
+  }, [suburb]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [showAreaWarning, setShowAreaWarning] = useState(false);
@@ -84,6 +90,7 @@ export default function LeadGenForm() {
           lastName: formData.lastName,
           email: formData.email,
           phone: formData.phone,
+          suburb,
         }),
       });
 
@@ -93,7 +100,7 @@ export default function LeadGenForm() {
       }
 
       if (typeof window !== 'undefined' && (window as any).fbq) {
-        (window as any).fbq('track', 'Lead');
+        (window as any).fbq('track', 'Lead', suburb ? { content_name: suburb, content_category: 'suburb' } : {});
       }
 
       const linkedinConversionId = process.env.NEXT_PUBLIC_LINKEDIN_CONVERSION_ID;
@@ -146,14 +153,22 @@ export default function LeadGenForm() {
             >
               <div className="text-center space-y-2 sm:space-y-3">
                 <h1 className="text-xl sm:text-3xl font-black text-white leading-tight text-balance">
-                  What&apos;s your home worth in{" "}
-                  <span style={{ fontStyle: 'italic', fontWeight: 400, color: '#FF4753', fontFamily: 'var(--font-source-serif)' }}>today&apos;s market?</span>
+                  {suburb ? (
+                    <>What&apos;s your{" "}
+                      <span style={{ fontStyle: 'italic', fontWeight: 400, color: '#FF4753', fontFamily: 'var(--font-source-serif)' }}>{suburb}</span>
+                      {" "}home worth?
+                    </>
+                  ) : (
+                    <>What&apos;s your home worth in{" "}
+                      <span style={{ fontStyle: 'italic', fontWeight: 400, color: '#FF4753', fontFamily: 'var(--font-source-serif)' }}>today&apos;s market?</span>
+                    </>
+                  )}
                 </h1>
                 <p className="text-sm sm:text-base text-white/60 font-medium">
                   Get a free market appraisal. No pressure. Just real, local insight.
                 </p>
                 <div className="inline-flex items-center bg-[#ECE7DC] px-5 py-2.5 rounded-full" style={{ fontStyle: 'italic', fontFamily: 'var(--font-source-serif)', fontWeight: 400, color: '#FF4753' }}>
-                  Enter your Hibiscus Coast Address
+                  {suburb ? `Enter your ${suburb} address` : 'Enter your Hibiscus Coast Address'}
                 </div>
               </div>
 
