@@ -8,7 +8,7 @@ import { supabase } from "@/lib/supabase";
 
 export const revalidate = 0; // Disable static caching so it always gets latest settings
 
-export default async function Home({ searchParams }: { searchParams: Promise<{ suburb?: string }> }) {
+export default async function Home({ searchParams }: { searchParams: Promise<{ suburb?: string; utm_medium?: string }> }) {
   const { suburb: rawSuburb, utm_medium } = await searchParams;
   const suburb = rawSuburb || '';
   const medium = utm_medium || '';
