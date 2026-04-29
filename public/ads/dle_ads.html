@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Professionals Hibiscus Coast — DLE Mailbox Drop Ads</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,300;1,400&family=Source+Serif+4:ital,opsz,wght@1,8,400;1,8,700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #111;
+      font-family: 'Poppins', system-ui, sans-serif;
+      padding: 56px 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 56px;
+    }
+
+    .page-header { text-align: center; }
+    .page-header h1 { font-size: 13px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #FF4753; margin-bottom: 4px; }
+    .page-header p { font-size: 12px; color: #555; letter-spacing: 0.04em; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 40px;
+      align-items: start;
+    }
+
+    .ad-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .suburb-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #555;
+    }
+
+    /* ═══════════════════════════════════════
+       DLE AD — 99mm × 210mm
+       Display at ~283px × 600px (half print size)
+    ════════════════════════════════════════ */
+    .ad {
+      width: 283px;
+      height: 600px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 4px;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04);
+      display: flex;
+      flex-direction: column;
+      background: radial-gradient(ellipse 120% 80% at 50% 35%, #404748 0%, #2e3235 100%);
+    }
+
+    /* ── AD BODY ── */
+    .ad-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 22px 22px 16px;
+    }
+
+    /* ── LOGO ── */
+    .logo-area {
+      margin-bottom: 14px;
+    }
+    .logo-area svg {
+      width: 180px;
+      height: 45px;
+      display: block;
+    }
+
+    /* ── RED RULE ── */
+    .red-rule {
+      width: 100%;
+      height: 2px;
+      background: #FF4753;
+      margin-bottom: 14px;
+      flex-shrink: 0;
+    }
+
+    /* ── QUOTE ── */
+    .quote {
+      font-size: 11px;
+      font-weight: 400;
+      color: #ffffff;
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+    .quote .fma-highlight {
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-style: italic;
+      font-weight: 500;
+      color: #FF4753;
+    }
+
+    /* ── HERO AREA (photo + headline) ── */
+    .hero-area {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-end;
+      gap: 0;
+      overflow: hidden;
+      margin: 0 -22px;
+      padding: 0 0 0 0;
+    }
+
+    .agent-img {
+      width: 100px;
+      height: 220px;
+      object-fit: cover;
+      object-position: center top;
+      flex-shrink: 0;
+      display: block;
+      align-self: flex-end;
+    }
+
+    .headline-text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      text-align: center;
+      padding: 0 12px 16px 8px;
+    }
+
+    .check-your {
+      font-size: 13px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.75);
+      letter-spacing: 0.02em;
+    }
+
+    .suburb-name {
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-size: 38px;
+      font-weight: 700;
+      font-style: italic;
+      color: #FF4753;
+      letter-spacing: -0.01em;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .selling-price {
+      font-size: 13px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+    }
+
+    /* ── QR SECTION ── */
+    .qr-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 22px 16px;
+      background: rgba(0,0,0,0.2);
+    }
+
+    .qr-wrap {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 8px;
+      display: inline-flex;
+    }
+
+    .qr-wrap svg, .qr-wrap img {
+      display: block;
+      width: 90px;
+      height: 90px;
+    }
+
+    .qr-cta {
+      font-size: 10px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.7);
+      text-align: center;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .qr-url {
+      font-size: 9px;
+      color: rgba(255,255,255,0.35);
+      text-align: center;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── FOOTER BAR ── */
+    .ad-footer {
+      background: #1f2325;
+      padding: 12px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .footer-left {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .footer-name {
+      font-size: 11px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .footer-agency {
+      font-size: 9px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .footer-divider {
+      width: 1px;
+      height: 22px;
+      background: rgba(255,255,255,0.15);
+      flex-shrink: 0;
+    }
+
+    .footer-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 1px;
+    }
+
+    .footer-phone {
+      font-size: 11px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .footer-license {
+      font-size: 9px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* ── INSTRUCTIONS ── */
+    .instructions {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 24px 36px;
+      max-width: 720px;
+      text-align: center;
+      font-size: 12px;
+      color: #666;
+      line-height: 1.8;
+    }
+    .instructions h3 { font-size: 12px; font-weight: 600; color: #aaa; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
+    .instructions strong { color: #999; }
+    .instructions code { background: #222; color: #FF4753; padding: 1px 6px; border-radius: 3px; font-size: 11px; }
+
+    /* ── PRINT STYLES ── */
+    @media print {
+      body { background: white; padding: 0; gap: 0; }
+      .page-header, .instructions { display: none; }
+      .grid { grid-template-columns: repeat(2, 99mm); gap: 0; page-break-inside: avoid; }
+      .ad-wrapper { break-inside: avoid; }
+      .ad {
+        width: 99mm;
+        height: 210mm;
+        border-radius: 0;
+        box-shadow: none;
+        page-break-inside: avoid;
+      }
+      .suburb-label { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Inline SVG logo symbol (same as social ads) -->
+<svg style="display:none" aria-hidden="true">
+  <defs>
+    <symbol id="prof-logo" viewBox="0 0 750 187.5" preserveAspectRatio="xMidYMid meet">
+      <path fill="#fff" d="M157.07 131V59.13l23.59-.46c19.22-.35 28.77 9.1 28.77 20.73 0 15.77-13.93 24.29-29.82 24.29-2.65 0-5.98-.23-8.51-.46V131zm14.05-65.63v31.32c2.19.46 4.95.7 7.83.7 8.97 0 15.54-6.22 15.54-15.9 0-9.67-6.1-16.12-16.01-16.12zM216.5 131V79.73l12.31-2.88v10.25h.58c3-6.91 7.83-10.59 13.93-10.59 2.65 0 5.18.7 7.37 1.96l-2.3 11.63c-2.07-2.3-4.38-3.68-7.49-3.68-5.41 0-10.24 5.53-12.09 16.8V131zm35.84-25.7c0-16.35 11.17-28.79 28.09-28.79s28.33 11.63 28.33 27.41c0 15.77-11.17 28.78-28.08 28.78-16.92 0-26.34-11.63-26.34-27.4zm41.1.81c0-16-6.33-23.14-14.4-23.14-8.06 0-13.46 7.37-13.46 20.27 0 15.89 6.33 23.14 14.28 23.14s13.58-7.49 13.58-20.27zM316.55 131V84.92h-8.4v-6.68h8.4v-2.54c0-17.38 7.6-24.98 20.49-24.98 5.41 0 10.36 1.96 14.5 4.49l-3.91 8.4c-2.19-3.68-5.76-6.44-9.91-6.44-5.64 0-8.75 4.26-8.75 13.01v8.06h15.19v6.68H328.98V131zm76.52-4.37c-4.49 3.8-10.24 6.1-18.65 6.1-15.54 0-26.47-10.82-26.47-27.41 0-16.58 11.4-28.78 26.36-28.78 14.96 0 22.1 9.1 22.1 21.64 0 1.5-.12 3.8-.46 5.64H361.3c0 12.21 5.75 22.22 16.92 22.22 4.49 0 8.52-1.73 11.86-4.61zM383.75 97.93c0-9.21-3.11-15.08-9.91-15.08-5.41 0-10.59 5.64-12.2 15.08zM405.59 119.8c3.56 4.03 8.51 6.56 14.73 6.56 6.56 0 11.05-2.42 11.05-7.14 0-3.91-3-6.56-11.98-9.44-11.05-3.56-17.6-7.94-17.6-17.27 0-8.63 7.37-16 20.73-16 7.02 0 13.47 1.49 18.77 4.37l-3.68 8.52c-3.56-3.91-8.75-6.56-14.85-6.56-6.45 0-9.68 2.42-9.68 6.33 0 3.68 2.42 5.98 11.17 8.98 12.66 4.37 18.42 8.63 18.42 17.27 0 9.32-7.72 17.27-22.22 17.27-7.02 0-13.47-1.61-18.54-4.38zM450.7 119.8c3.56 4.03 8.51 6.56 14.73 6.56 6.56 0 11.05-2.42 11.05-7.14 0-3.91-3-6.56-11.98-9.44-11.05-3.56-17.6-7.94-17.6-17.27 0-8.63 7.37-16 20.73-16 7.02 0 13.47 1.49 18.77 4.37l-3.68 8.52c-3.56-3.91-8.75-6.56-14.85-6.56-6.45 0-9.68 2.42-9.68 6.33 0 3.68 2.42 5.98 11.17 8.98 12.66 4.37 18.42 8.63 18.42 17.27 0 9.32-7.72 17.27-22.22 17.27-7.02 0-13.47-1.61-18.54-4.38zM494.28 60.28c0-4.49 3.57-8.06 7.83-8.06s7.83 3.57 7.83 8.06-3.57 7.94-7.83 7.94-7.83-3.57-7.83-7.94zm1.61 70.69V79.73l12.43-2.88V131zM516.29 105.3c0-16.35 11.17-28.79 28.09-28.79s28.33 11.63 28.33 27.41c0 15.77-11.17 28.78-28.08 28.78-16.93 0-26.34-11.63-26.34-27.4zm41.1.81c0-16-6.33-23.14-14.4-23.14s-13.47 7.37-13.47 20.27c0 15.89 6.33 23.14 14.28 23.14s13.59-7.49 13.59-20.27zM612.56 131V98.39c0-8.17-2.65-11.75-9.1-11.75-4.49 0-9.21 3.57-12.2 7.37V131H578.94V79.73l12.31-2.88v8.52h.58c5.75-5.64 11.51-8.87 18.42-8.87 10.36 0 14.73 7.72 14.73 17.5V131zM663.98 131v-7.26h-.46c-3.8 5.64-9.1 8.98-16.81 8.98-7.71 0-14.28-5.75-14.28-14.17 0-10.94 10.36-16.47 28.66-20.85l2.89-.69v-2.42c0-8.29-2.3-11.63-9.1-11.63-4.84 0-10.13 3.22-14.5 9.33l-5.07-7.72c7.49-5.87 13.7-8.06 22.45-8.06 13.24 0 18.66 6.68 18.66 21.99V131zm0-28.32-2.77.81c-11.74 3.45-16.23 7.72-16.23 12.55 0 4.84 3.22 7.6 7.37 7.6 4.84 0 8.98-3.11 11.63-6.91zM687.54 131V53.71l12.31-3V131zM711.94 119.8c3.57 4.03 8.51 6.56 14.73 6.56 6.56 0 11.05-2.42 11.05-7.14 0-3.91-3-6.56-11.98-9.44-11.05-3.56-17.61-7.94-17.61-17.27 0-8.63 7.37-16 20.73-16 7.02 0 13.47 1.49 18.77 4.37l-3.68 8.52c-3.57-3.91-8.75-6.56-14.85-6.56-6.45 0-9.68 2.42-9.68 6.33 0 3.68 2.42 5.98 11.17 8.98 12.66 4.37 18.77 8.63 18.77 17.27 0 9.32-7.72 17.27-22.22 17.27-7.02 0-13.47-1.61-18.54-4.38z"/>
+      <path fill="#FF4753" d="M60.49 158.32L1 125.72V28.71h61.45c25.23 0 45.77 20.22 45.77 45.06s-20.54 45.67-45.77 45.67H60.49zm-49.02-38.81 38.55 21.12V63.08L11.47 42.65zm49.02-10.54h1.96c19.47 0 35.25-15.79 35.25-35.2S81.9 39.18 62.45 39.18H27.29l33.2 17.61z"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="page-header">
+  <h1>Professionals Hibiscus Coast — DLE Mailbox Drop</h1>
+  <p>Ed Scanlan &nbsp;·&nbsp; 99 × 210 mm &nbsp;·&nbsp; Print-ready with trackable QR codes</p>
+</div>
+
+<div class="grid">
+
+  <!-- OREWA -->
+  <div class="ad-wrapper">
+    <span class="suburb-label">Orewa</span>
+    <div class="ad">
+      <div class="ad-body">
+        <div class="logo-area">
+          <svg aria-label="Professionals Hibiscus Coast"><use href="#prof-logo"/></svg>
+        </div>
+        <div class="red-rule"></div>
+        <p class="quote"><span class="fma-highlight">Free Market Appraisal</span> — No Pressure. Just Real, Local Insight.</p>
+        <div class="hero-area">
+          <img class="agent-img" src="/agent_transparent.webp" alt="Ed Scanlan">
+          <div class="headline-text">
+            <span class="check-your">Check Your</span>
+            <span class="suburb-name">Orewa</span>
+            <span class="selling-price">Home's Estimated Selling Price</span>
+          </div>
+        </div>
+      </div>
+      <div class="qr-section">
+        <div class="qr-wrap">
+          <div id="qr-orewa"></div>
+        </div>
+        <span class="qr-cta">Scan to find your home's value</span>
+        <span class="qr-url">leads.edscanlan.co.nz</span>
+      </div>
+      <div class="ad-footer">
+        <div class="footer-left">
+          <span class="footer-name">Ed Scanlan</span>
+          <span class="footer-agency">Professionals Hibiscus Coast</span>
+        </div>
+        <div class="footer-divider"></div>
+        <div class="footer-right">
+          <span class="footer-phone">021 814 578</span>
+          <span class="footer-license">Licensed Salesperson REAA 2008</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MILLWATER -->
+  <div class="ad-wrapper">
+    <span class="suburb-label">Millwater</span>
+    <div class="ad">
+      <div class="ad-body">
+        <div class="logo-area">
+          <svg aria-label="Professionals Hibiscus Coast"><use href="#prof-logo"/></svg>
+        </div>
+        <div class="red-rule"></div>
+        <p class="quote"><span class="fma-highlight">Free Market Appraisal</span> — No Pressure. Just Real, Local Insight.</p>
+        <div class="hero-area">
+          <img class="agent-img" src="/agent_transparent.webp" alt="Ed Scanlan">
+          <div class="headline-text">
+            <span class="check-your">Check Your</span>
+            <span class="suburb-name">Millwater</span>
+            <span class="selling-price">Home's Estimated Selling Price</span>
+          </div>
+        </div>
+      </div>
+      <div class="qr-section">
+        <div class="qr-wrap">
+          <div id="qr-millwater"></div>
+        </div>
+        <span class="qr-cta">Scan to find your home's value</span>
+        <span class="qr-url">leads.edscanlan.co.nz</span>
+      </div>
+      <div class="ad-footer">
+        <div class="footer-left">
+          <span class="footer-name">Ed Scanlan</span>
+          <span class="footer-agency">Professionals Hibiscus Coast</span>
+        </div>
+        <div class="footer-divider"></div>
+        <div class="footer-right">
+          <span class="footer-phone">021 814 578</span>
+          <span class="footer-license">Licensed Salesperson REAA 2008</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MILLDALE -->
+  <div class="ad-wrapper">
+    <span class="suburb-label">Milldale</span>
+    <div class="ad">
+      <div class="ad-body">
+        <div class="logo-area">
+          <svg aria-label="Professionals Hibiscus Coast"><use href="#prof-logo"/></svg>
+        </div>
+        <div class="red-rule"></div>
+        <p class="quote"><span class="fma-highlight">Free Market Appraisal</span> — No Pressure. Just Real, Local Insight.</p>
+        <div class="hero-area">
+          <img class="agent-img" src="/agent_transparent.webp" alt="Ed Scanlan">
+          <div class="headline-text">
+            <span class="check-your">Check Your</span>
+            <span class="suburb-name">Milldale</span>
+            <span class="selling-price">Home's Estimated Selling Price</span>
+          </div>
+        </div>
+      </div>
+      <div class="qr-section">
+        <div class="qr-wrap">
+          <div id="qr-milldale"></div>
+        </div>
+        <span class="qr-cta">Scan to find your home's value</span>
+        <span class="qr-url">leads.edscanlan.co.nz</span>
+      </div>
+      <div class="ad-footer">
+        <div class="footer-left">
+          <span class="footer-name">Ed Scanlan</span>
+          <span class="footer-agency">Professionals Hibiscus Coast</span>
+        </div>
+        <div class="footer-divider"></div>
+        <div class="footer-right">
+          <span class="footer-phone">021 814 578</span>
+          <span class="footer-license">Licensed Salesperson REAA 2008</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RED BEACH -->
+  <div class="ad-wrapper">
+    <span class="suburb-label">Red Beach</span>
+    <div class="ad">
+      <div class="ad-body">
+        <div class="logo-area">
+          <svg aria-label="Professionals Hibiscus Coast"><use href="#prof-logo"/></svg>
+        </div>
+        <div class="red-rule"></div>
+        <p class="quote"><span class="fma-highlight">Free Market Appraisal</span> — No Pressure. Just Real, Local Insight.</p>
+        <div class="hero-area">
+          <img class="agent-img" src="/agent_transparent.webp" alt="Ed Scanlan">
+          <div class="headline-text">
+            <span class="check-your">Check Your</span>
+            <span class="suburb-name">Red Beach</span>
+            <span class="selling-price">Home's Estimated Selling Price</span>
+          </div>
+        </div>
+      </div>
+      <div class="qr-section">
+        <div class="qr-wrap">
+          <div id="qr-redbeach"></div>
+        </div>
+        <span class="qr-cta">Scan to find your home's value</span>
+        <span class="qr-url">leads.edscanlan.co.nz</span>
+      </div>
+      <div class="ad-footer">
+        <div class="footer-left">
+          <span class="footer-name">Ed Scanlan</span>
+          <span class="footer-agency">Professionals Hibiscus Coast</span>
+        </div>
+        <div class="footer-divider"></div>
+        <div class="footer-right">
+          <span class="footer-phone">021 814 578</span>
+          <span class="footer-license">Licensed Salesperson REAA 2008</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end .grid -->
+
+<div class="instructions">
+  <h3>Print Instructions</h3>
+  Each ad is sized at <strong>99 × 210 mm</strong> (DLE). To export for print:<br>
+  Use <strong>File → Print → Save as PDF</strong> at <strong>300dpi</strong> with no scaling.<br>
+  Or right-click each ad and screenshot at 2× for a 566 × 1200px digital version.<br><br>
+  QR codes link to suburb-specific landing pages and are tagged <code>utm_medium=print</code> so<br>
+  mailbox drop leads appear separately from Meta leads in HubSpot.
+</div>
+
+<script>
+  function makeQR(elementId, url) {
+    var qr = qrcode(0, 'H');
+    qr.addData(url);
+    qr.make();
+    var el = document.getElementById(elementId);
+    el.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+    var svg = el.querySelector('svg');
+    if (svg) { svg.style.width = '90px'; svg.style.height = '90px'; }
+  }
+
+  makeQR('qr-orewa',     'https://leads.edscanlan.co.nz?suburb=Orewa&utm_medium=print');
+  makeQR('qr-millwater', 'https://leads.edscanlan.co.nz?suburb=Millwater&utm_medium=print');
+  makeQR('qr-milldale',  'https://leads.edscanlan.co.nz?suburb=Milldale&utm_medium=print');
+  makeQR('qr-redbeach',  'https://leads.edscanlan.co.nz?suburb=Red+Beach&utm_medium=print');
+</script>
+
+</body>
+</html>

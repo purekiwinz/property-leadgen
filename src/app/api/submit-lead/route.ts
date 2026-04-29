@@ -3,13 +3,14 @@ import { createClient } from "@supabase/supabase-js";
 
 export const dynamic = "force-dynamic";
 
-async function createHubSpotNote(token: string, contactId: string, suburb: string) {
+async function createHubSpotNote(token: string, contactId: string, suburb: string, medium: string) {
+  const channel = medium === 'print' ? 'mailbox drop' : 'Meta';
   await fetch("https://api.hubapi.com/crm/v3/objects/notes", {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     body: JSON.stringify({
       properties: {
-        hs_note_body: `Ad source: ${suburb} suburb campaign (Meta)`,
+        hs_note_body: `Ad source: ${suburb} suburb campaign (${channel})`,
         hs_timestamp: new Date().toISOString(),
       },
       associations: [{
@@ -29,6 +30,7 @@ async function pushToHubSpot(data: {
   timeline: string;
   buyingNext: string;
   suburb: string;
+  medium: string;
 }) {
   const token = process.env.HUBSPOT_ACCESS_TOKEN;
   if (!token) return;
@@ -95,7 +97,7 @@ async function pushToHubSpot(data: {
               ],
             }),
           }),
-          data.suburb ? createHubSpotNote(token, existingId, data.suburb) : Promise.resolve(),
+          data.suburb ? createHubSpotNote(token, existingId, data.suburb, data.medium) : Promise.resolve(),
         ]);
       }
       return;
@@ -136,13 +138,13 @@ export async function POST(req: NextRequest) {
   );
 
   const body = await req.json();
-  const { address, timeline, buyingNext, firstName, lastName, email, phone, suburb } = body;
+  const { address, timeline, buyingNext, firstName, lastName, email, phone, suburb, medium } = body;
 
   const { error } = await supabase.from("appraisal_leads").insert([{
     address, timeline, buying_next: buyingNext,
     first_name: firstName, last_name: lastName,
     email, phone,
-    source: "edscanlan",
+    source: medium === 'print' ? 'dle' : 'edscanlan',
     ad_suburb: suburb || null,
   }]);
 
@@ -150,7 +152,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  await pushToHubSpot({ firstName, lastName, email, phone, address, timeline, buyingNext, suburb: suburb || '' }).catch(
+  await pushToHubSpot({ firstName, lastName, email, phone, address, timeline, buyingNext, suburb: suburb || '', medium: medium || '' }).catch(
     (e) => console.error("HubSpot push failed:", e)
   );
 
