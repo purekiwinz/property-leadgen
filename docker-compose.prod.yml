@@ -6,9 +6,11 @@ services:
       - autoagent_network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.property-leadgen.rule=Host(`leads.edscanlan.co.nz`)"
+      - "traefik.http.routers.property-leadgen.rule=Host(`edscanlan.co.nz`) || Host(`leads.edscanlan.co.nz`)"
       - "traefik.http.routers.property-leadgen.entrypoints=websecure"
       - "traefik.http.routers.property-leadgen.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.property-leadgen.tls.domains[0].main=edscanlan.co.nz"
+      - "traefik.http.routers.property-leadgen.tls.domains[0].sans=leads.edscanlan.co.nz"
       - "traefik.http.services.property-leadgen.loadbalancer.server.port=3000"
     healthcheck:
       test: ["CMD-SHELL", "wget --spider -q http://localhost:3000 || exit 1"]

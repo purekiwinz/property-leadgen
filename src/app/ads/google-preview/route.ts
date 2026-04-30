@@ -22,7 +22,7 @@ const html = `<!DOCTYPE html>
     .result-title:hover { text-decoration: underline; }
     .result-desc { font-size: 14px; color: #4d5156; line-height: 1.58; }
     .result-desc strong { color: #202124; font-weight: 700; }
-    .sitelinks { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; margin-top: 10px; }
+    .sitelinks { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: 10px; }
     .sitelink { padding: 8px 12px 8px 0; border-top: 1px solid #ebebeb; }
     .sitelink-title { font-size: 14px; color: #1a0dab; cursor: pointer; display: block; margin-bottom: 2px; }
     .sitelink-title:hover { text-decoration: underline; }
@@ -44,7 +44,7 @@ const html = `<!DOCTYPE html>
       <div class="favicon"><div class="favicon-inner">P</div></div>
       <div>
         <div class="site-name">Ed Scanlan — Professionals Hibiscus Coast</div>
-        <div class="breadcrumb">leads.edscanlan.co.nz</div>
+        <div class="breadcrumb">edscanlan.co.nz</div>
       </div>
     </div>
     <div class="result-title">Free Property Appraisal | Ed Scanlan — Hibiscus Coast Real Estate</div>
@@ -55,16 +55,20 @@ const html = `<!DOCTYPE html>
     </div>
     <div class="sitelinks">
       <div class="sitelink">
-        <a class="sitelink-title" href="https://leads.edscanlan.co.nz/#appraisal">Free Market Appraisal</a>
+        <a class="sitelink-title" href="https://edscanlan.co.nz/#appraisal">Free Market Appraisal</a>
         <div class="sitelink-desc">No pressure. Get your home's estimated selling price instantly.</div>
       </div>
       <div class="sitelink">
-        <a class="sitelink-title" href="https://leads.edscanlan.co.nz/#recent-sales">Recent Hibiscus Coast Sales</a>
+        <a class="sitelink-title" href="https://edscanlan.co.nz/#recent-sales">Recent Hibiscus Coast Sales</a>
         <div class="sitelink-desc">See proven local results — Orewa, Millwater, Red Beach &amp; Milldale.</div>
       </div>
       <div class="sitelink">
-        <a class="sitelink-title" href="https://leads.edscanlan.co.nz/#about">Real Estate Expertise</a>
+        <a class="sitelink-title" href="https://edscanlan.co.nz/#about">Real Estate Expertise</a>
         <div class="sitelink-desc">20+ years marketing with NZ Herald &amp; NZME. Local for 17+ years.</div>
+      </div>
+      <div class="sitelink">
+        <a class="sitelink-title" href="tel:+6421814578">Call Ed — 021 814 578</a>
+        <div class="sitelink-desc">Talk directly with Ed for a free, no-pressure conversation about your property.</div>
       </div>
     </div>
   </div>
