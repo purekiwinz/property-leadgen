@@ -16,7 +16,7 @@ const sourceSerif = Source_Serif_4({
   style: ["normal", "italic"],
 });
 
-const SITE_URL = 'https://leads.edscanlan.co.nz';
+const SITE_URL = 'https://edscanlan.co.nz';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

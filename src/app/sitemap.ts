@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
 
-const SITE_URL = 'https://leads.edscanlan.co.nz';
+const SITE_URL = 'https://edscanlan.co.nz';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [

@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/ads/', '/admin/'],
       },
     ],
-    sitemap: 'https://leads.edscanlan.co.nz/sitemap.xml',
+    sitemap: 'https://edscanlan.co.nz/sitemap.xml',
   };
 }
