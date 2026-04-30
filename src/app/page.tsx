@@ -53,7 +53,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ s
           <div className="absolute inset-0 z-0">
             {/* Background Image of the house/driveway - clean version */}
             <Image
-              src="/hero-neaptide.jpg"
+              src="/hero-neaptide-v2.jpg"
               alt="Property background"
               fill
               priority
