@@ -195,7 +195,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ s
                         className="absolute bg-[#FF4753] flex items-center justify-center"
                         style={{ width: '220%', height: '80px', top: '2%', left: '-30%', transform: 'rotate(45deg)' }}
                       >
-                        <span style={{ fontStyle: 'italic', fontFamily: 'var(--font-source-serif)', fontWeight: 400 }} className="text-white text-3xl tracking-wide">Sold</span>
+                        <span style={{ fontStyle: 'italic', fontFamily: 'var(--font-source-serif)', fontWeight: 400 }} className="text-white text-4xl tracking-wide">Sold</span>
                       </div>
                     </div>
                     {/* Month tag */}
