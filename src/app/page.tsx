@@ -6,7 +6,7 @@ import { Award, Clock, MapPin, Star } from "lucide-react";
 import { BedroomIcon, BathroomIcon, CarParkIcon } from "@/components/PropertyIcons";
 import { supabase } from "@/lib/supabase";
 
-export const revalidate = 0; // Disable static caching so it always gets latest settings
+export const revalidate = 300; // Revalidate every 5 minutes
 
 export default async function Home({ searchParams }: { searchParams: Promise<{ suburb?: string; utm_medium?: string }> }) {
   const { suburb: rawSuburb, utm_medium } = await searchParams;
@@ -187,6 +187,8 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ s
                       src={sale.image}
                       alt={sale.address}
                       fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 384px"
+                      priority={i < 3}
                       className="object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                     {/* SOLD diagonal band */}
