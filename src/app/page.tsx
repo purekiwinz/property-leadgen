@@ -49,7 +49,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ s
       <main className="flex-1 flex flex-col">
         {/* First-fold wrapper: header + hero fill exactly 100vh on mobile */}
         {/* Hero Section */}
-        <div className="relative pt-2 px-4 flex flex-col items-center justify-center lg:justify-end flex-1 lg:flex-none lg:min-h-[850px] overflow-hidden bg-sky-200">
+        <div id="appraisal" className="relative pt-2 px-4 flex flex-col items-center justify-center lg:justify-end flex-1 lg:flex-none lg:min-h-[850px] overflow-hidden bg-sky-200">
           <div className="absolute inset-0 z-0">
             {/* Background Image of the house/driveway - clean version */}
             <Image
@@ -83,7 +83,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ s
         </div>
 
         {/* About Ed Scanlan Section */}
-        <section className="bg-white py-24 px-4 overflow-hidden">
+        <section id="about" className="bg-white py-24 px-4 overflow-hidden">
           <div className="max-w-4xl mx-auto">
             <div className="space-y-8 text-center">
               
@@ -172,7 +172,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ s
 
         {/* Recent Sales Grid — only shown when there are sales in the database */}
         {sales && sales.filter((s: any) => s.image).length > 0 && (
-        <section className="bg-slate-50 py-24 px-4">
+        <section id="recent-sales" className="bg-slate-50 py-24 px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16 space-y-4">
               <h2 className="text-4xl md:text-5xl font-black text-slate-900">Proven Hibiscus Coast Recent Results</h2>
@@ -327,6 +327,86 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ s
           </div>
         </div>
       </footer>
+
+      {/* Schema.org structured data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify([
+          {
+            '@context': 'https://schema.org',
+            '@type': 'RealEstateAgent',
+            '@id': 'https://leads.edscanlan.co.nz/#agent',
+            name: 'Ed Scanlan — Professionals Hibiscus Coast',
+            url: 'https://leads.edscanlan.co.nz',
+            telephone: '+64-21-814-578',
+            email: 'ed.scanlan@meros.co.nz',
+            image: 'https://leads.edscanlan.co.nz/agent_transparent.webp',
+            description: 'Free market appraisals and property sales on the Hibiscus Coast. 20+ years marketing experience, licensed REAA 2008.',
+            address: {
+              '@type': 'PostalAddress',
+              addressLocality: 'Hibiscus Coast',
+              addressRegion: 'Auckland',
+              addressCountry: 'NZ',
+            },
+            areaServed: [
+              { '@type': 'City', name: 'Orewa' },
+              { '@type': 'City', name: 'Millwater' },
+              { '@type': 'City', name: 'Milldale' },
+              { '@type': 'City', name: 'Red Beach' },
+            ],
+            hasOfferCatalog: {
+              '@type': 'OfferCatalog',
+              name: 'Real Estate Services',
+              itemListElement: [
+                { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Free Market Appraisal', url: 'https://leads.edscanlan.co.nz/#appraisal' } },
+                { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Property Sales', url: 'https://leads.edscanlan.co.nz/#recent-sales' } },
+              ],
+            },
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'Person',
+            '@id': 'https://leads.edscanlan.co.nz/#ed-scanlan',
+            name: agentName,
+            jobTitle: 'Licensed Real Estate Salesperson',
+            telephone: `+64-21-814-578`,
+            email: 'ed.scanlan@meros.co.nz',
+            image: 'https://leads.edscanlan.co.nz/agent_transparent.webp',
+            worksFor: { '@id': 'https://leads.edscanlan.co.nz/#agent' },
+            knowsAbout: ['Real Estate', 'Property Marketing', 'Hibiscus Coast Property Market'],
+            description: `Licensed real estate professional with 20+ years of marketing experience, formerly at NZ Herald and NZME. Hibiscus Coast local for 17+ years.`,
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            '@id': 'https://leads.edscanlan.co.nz/#website',
+            url: 'https://leads.edscanlan.co.nz',
+            name: 'Ed Scanlan — Hibiscus Coast Real Estate',
+            description: 'Free property market appraisals and recent sales results for Orewa, Millwater, Milldale and Red Beach.',
+            publisher: { '@id': 'https://leads.edscanlan.co.nz/#agent' },
+            potentialAction: {
+              '@type': 'SearchAction',
+              target: 'https://leads.edscanlan.co.nz/?suburb={suburb}',
+              'query-input': 'required name=suburb',
+            },
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'WebPage',
+            '@id': 'https://leads.edscanlan.co.nz/#webpage',
+            url: 'https://leads.edscanlan.co.nz',
+            name: 'Free Property Appraisal | Ed Scanlan — Hibiscus Coast Real Estate',
+            isPartOf: { '@id': 'https://leads.edscanlan.co.nz/#website' },
+            about: { '@id': 'https://leads.edscanlan.co.nz/#agent' },
+            description: 'Get a free, no-pressure market appraisal. View recent Hibiscus Coast sales results and learn about Ed Scanlan\'s real estate expertise.',
+            significantLink: [
+              'https://leads.edscanlan.co.nz/#appraisal',
+              'https://leads.edscanlan.co.nz/#recent-sales',
+              'https://leads.edscanlan.co.nz/#about',
+            ],
+          },
+        ]) }}
+      />
     </div>
   );
 }

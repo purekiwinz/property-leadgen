@@ -16,9 +16,54 @@ const sourceSerif = Source_Serif_4({
   style: ["normal", "italic"],
 });
 
+const SITE_URL = 'https://leads.edscanlan.co.nz';
+
 export const metadata: Metadata = {
-  title: "Property Appraisal | Professionals Hibiscus",
-  description: "Get an expert, data-driven property appraisal from Ed Scanlan — Professionals Hibiscus Coast.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'Free Property Appraisal | Ed Scanlan — Hibiscus Coast Real Estate',
+    template: '%s | Ed Scanlan — Professionals Hibiscus Coast',
+  },
+  description: 'Get a free, no-pressure market appraisal from Ed Scanlan at Professionals Hibiscus Coast. Serving Orewa, Millwater, Milldale and Red Beach. 20+ years marketing experience, 5-star client reviews.',
+  keywords: [
+    'free property appraisal Hibiscus Coast',
+    'market appraisal Orewa',
+    'real estate agent Millwater',
+    'sell house Hibiscus Coast',
+    'Ed Scanlan Professionals',
+    'Professionals Hibiscus Coast',
+    'property valuation Orewa',
+    'Red Beach house value',
+    'Milldale real estate agent',
+    'Hibiscus Coast property sales',
+    'free market appraisal NZ',
+  ],
+  authors: [{ name: 'Ed Scanlan', url: SITE_URL }],
+  creator: 'Ed Scanlan',
+  publisher: 'Professionals Hibiscus Coast',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_NZ',
+    url: SITE_URL,
+    siteName: 'Ed Scanlan — Professionals Hibiscus Coast',
+    title: 'Free Property Appraisal | Ed Scanlan — Hibiscus Coast Real Estate',
+    description: 'Get a free, no-pressure market appraisal from Ed Scanlan at Professionals Hibiscus Coast. Serving Orewa, Millwater, Milldale and Red Beach.',
+    images: [{ url: '/hero-neaptide-v2.jpg', width: 1200, height: 630, alt: 'Hibiscus Coast real estate — Ed Scanlan' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Free Property Appraisal | Ed Scanlan — Hibiscus Coast Real Estate',
+    description: 'Get a free, no-pressure market appraisal from Ed Scanlan at Professionals Hibiscus Coast.',
+    images: ['/hero-neaptide-v2.jpg'],
+  },
+  alternates: {
+    canonical: SITE_URL,
+  },
 };
 
 export default function RootLayout({
