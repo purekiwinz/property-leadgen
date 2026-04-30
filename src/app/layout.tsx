@@ -53,13 +53,13 @@ export const metadata: Metadata = {
     siteName: 'Ed Scanlan — Professionals Hibiscus Coast',
     title: 'Free Property Appraisal | Ed Scanlan — Hibiscus Coast Real Estate',
     description: 'Get a free, no-pressure market appraisal from Ed Scanlan at Professionals Hibiscus Coast. Serving Orewa, Millwater, Milldale and Red Beach.',
-    images: [{ url: '/hero-neaptide-v2.jpg', width: 1200, height: 630, alt: 'Hibiscus Coast real estate — Ed Scanlan' }],
+    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'Ed Scanlan — Free Market Appraisal, Hibiscus Coast Real Estate' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Free Property Appraisal | Ed Scanlan — Hibiscus Coast Real Estate',
     description: 'Get a free, no-pressure market appraisal from Ed Scanlan at Professionals Hibiscus Coast.',
-    images: ['/hero-neaptide-v2.jpg'],
+    images: ['/og-image.jpg'],
   },
   alternates: {
     canonical: SITE_URL,
