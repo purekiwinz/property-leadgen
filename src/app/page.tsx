@@ -76,7 +76,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ s
 
           {/* Form — centred on right half */}
           <div className="w-full max-w-7xl mx-auto relative z-20 flex flex-col lg:flex-row items-center justify-end h-full pt-16 pb-10">
-            <div className="w-full md:w-[540px] lg:w-[600px] shrink-0 my-6 lg:my-0">
+            <div className="w-full md:w-[540px] lg:w-[600px] shrink-0 my-6 lg:my-0 lg:mr-32">
               <LeadGenForm suburb={suburb} medium={medium} />
             </div>
           </div>
