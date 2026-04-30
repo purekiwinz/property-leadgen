@@ -103,7 +103,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ s
                 <h2 className="text-base font-bold text-[#FF4753] tracking-[0.2em] uppercase">The Marketing Advantage</h2>
                 <h3 className="text-5xl sm:text-5xl font-black text-[#0f172a] leading-tight">Meet {agentName}</h3>
                 <p className="text-2xl text-slate-600 font-medium max-w-2xl mx-auto">
-                  A licensed real estate professional with over 20 years of high-level marketing and storytelling experience.
+                  A licensed real estate professional with over 20 years of high-level real estate Advertising and Marketing experience.
                 </p>
               </div>
               
