@@ -18,39 +18,26 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 40px;
+      gap: 48px;
     }
 
     .page-header { text-align: center; }
     .page-header h1 { font-size: 13px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #FF4753; margin-bottom: 4px; }
     .page-header p { font-size: 12px; color: #555; letter-spacing: 0.04em; }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, 560px);
-      gap: 28px;
-      align-items: start;
-    }
+    /* ── suburb section ── */
+    .suburb-section { display: flex; flex-direction: column; gap: 8px; }
+    .suburb-header { display: flex; align-items: baseline; gap: 8px; }
+    .suburb-sect-label { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #FF4753; }
+    .suburb-sect-sub { font-size: 10px; color: #444; letter-spacing: 0.06em; }
+    .flyer-pair { display: flex; gap: 28px; align-items: flex-start; }
+    .flyer-col { display: flex; flex-direction: column; gap: 6px; }
+    .side-label { font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #444; }
 
-    .ad-wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .suburb-label {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: #555;
-    }
-
-    /* ═══════════════════════════════════════
+    /* ══════════════════════════════════════
        DLE AD — 210mm × 99mm (landscape)
        Display at 560px × 264px
-    ════════════════════════════════════════ */
+    ═══════════════════════════════════════ */
     .ad {
       width: 560px;
       height: 264px;
@@ -63,183 +50,93 @@
       background: #373D40;
     }
 
-    /* ── LEFT: AGENT PHOTO ── */
-    .col-agent {
-      width: 165px;
+    /* ── FRONT: agent col ── */
+    .col-agent { width: 165px; flex-shrink: 0; overflow: hidden; position: relative; background: #373D40; }
+    .agent-img { width: 100%; height: 100%; object-fit: cover; object-position: 60% top; display: block; }
+
+    /* ── FRONT: content col ── */
+    .col-content { flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding: 16px 14px 16px 18px; overflow: hidden; }
+    .top-group { display: flex; flex-direction: column; }
+    .logo-area { margin-bottom: 8px; flex-shrink: 0; }
+    .red-rule { width: 100%; height: 2px; background: #FF4753; margin-bottom: 8px; flex-shrink: 0; }
+    .quote { font-size: 11px; font-weight: 700; color: #FF4753; font-family: 'Source Serif 4', Georgia, serif; font-style: italic; line-height: 1.3; }
+    .quote-body { font-family: 'Poppins', sans-serif; font-style: normal; font-weight: 400; font-size: 9.5px; color: #fff; display: block; margin-top: 3px; line-height: 1.5; }
+    .headline-block { display: flex; flex-direction: column; }
+    .check-your { font-size: 10px; font-weight: 400; color: #fff; letter-spacing: 0.04em; line-height: 1.4; }
+    .suburb-name { font-family: 'Source Serif 4', Georgia, serif; font-size: 36px; font-weight: 700; font-style: italic; color: #FF4753; letter-spacing: -0.01em; line-height: 1; white-space: nowrap; }
+    .selling-price { font-size: 10px; font-weight: 700; color: #fff; line-height: 1.35; letter-spacing: 0.01em; text-transform: uppercase; margin-top: 3px; }
+
+    /* ── FRONT: QR col ── */
+    .col-qr { width: 148px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; padding: 14px; background: rgba(0,0,0,0.22); border-left: 1px solid rgba(255,255,255,0.06); }
+    .qr-wrap { background: #fff; border-radius: 6px; padding: 6px; display: inline-flex; flex-shrink: 0; }
+    .qr-wrap svg, .qr-wrap img { display: block; width: 76px; height: 76px; }
+    .qr-cta { font-size: 9px; font-weight: 700; color: #FF4753; font-family: 'Source Serif 4', Georgia, serif; font-style: italic; text-align: center; line-height: 1.4; }
+    .contact-block { width: 100%; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 7px; display: flex; flex-direction: column; align-items: center; gap: 1px; }
+    .contact-name { font-size: 10px; font-weight: 700; color: #fff; text-align: center; }
+    .contact-phone { font-size: 10px; font-weight: 600; color: #fff; text-align: center; }
+    .contact-license { font-size: 6px; font-weight: 400; color: #fff; text-align: center; line-height: 1.4; margin-top: 1px; white-space: nowrap; }
+
+    /* ── BACK: layout ── */
+    .back-ad { flex-direction: column; }
+
+    .back-header {
+      height: 46px;
       flex-shrink: 0;
-      overflow: hidden;
-      position: relative;
-      background: #373D40;
-    }
-
-    .agent-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: 60% top;
-      display: block;
-    }
-
-
-    /* ── CENTRE: CONTENT ── */
-    .col-content {
-      flex: 1;
       display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 16px 14px 16px 18px;
-      overflow: hidden;
+      align-items: center;
+      padding: 0 14px;
+      gap: 10px;
+      background: rgba(0,0,0,0.2);
     }
+    .bh-logo { flex-shrink: 0; }
+    .bh-sep { width: 1px; height: 26px; background: rgba(255,255,255,0.15); flex-shrink: 0; }
+    .bh-heading { display: flex; flex-direction: column; gap: 1px; }
+    .bh-suburb { font-family: 'Source Serif 4', Georgia, serif; font-style: italic; font-weight: 700; font-size: 17px; color: #FF4753; line-height: 1; }
+    .bh-title { font-size: 8.5px; font-weight: 600; color: #fff; letter-spacing: 0.1em; text-transform: uppercase; }
+    .bh-spacer { flex: 1; }
+    .bh-tagline { font-size: 9px; color: #fff; text-align: right; line-height: 1; font-weight: 400; white-space: nowrap; }
 
-    .top-group {
-      display: flex;
-      flex-direction: column;
-    }
+    .back-red-rule { width: 100%; height: 2px; background: #FF4753; flex-shrink: 0; }
 
-    .logo-area {
-      margin-bottom: 8px;
-      flex-shrink: 0;
-    }
-    .logo-area svg {
-      width: 150px;
-      height: 38px;
-      display: block;
-    }
+    /* ── BACK: sales row ── */
+    .sales-row { display: flex; flex: 1; min-height: 0; padding: 6px; gap: 5px; }
 
-    .red-rule {
-      width: 100%;
-      height: 2px;
+    .sale-tile { flex: 1; background: #373D40; border-radius: 0; overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
+    .tile-sep { width: 1px; background: rgba(255,255,255,0.25); align-self: stretch; flex-shrink: 0; }
+    .tile-img-wrap { position: relative; flex: 0 0 58%; overflow: hidden; }
+    .tile-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    /* SOLD diagonal band */
+    .sold-wrap { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+    .sold-band {
+      position: absolute;
       background: #FF4753;
-      margin-bottom: 8px;
-      flex-shrink: 0;
-    }
-
-    .quote {
-      font-size: 11px;
-      font-weight: 700;
-      color: #FF4753;
-      font-family: 'Source Serif 4', Georgia, serif;
-      font-style: italic;
-      line-height: 1.3;
-    }
-
-    .quote-body {
-      font-family: 'Poppins', sans-serif;
-      font-style: normal;
-      font-weight: 400;
-      font-size: 9.5px;
-      color: rgba(255,255,255,0.72);
-      display: block;
-      margin-top: 3px;
-      line-height: 1.5;
-    }
-
-
-    .headline-block {
       display: flex;
-      flex-direction: column;
-    }
-
-    .check-your {
-      font-size: 10px;
-      font-weight: 400;
-      color: rgba(255,255,255,0.6);
-      letter-spacing: 0.04em;
-      line-height: 1.4;
-    }
-
-    .suburb-name {
-      font-family: 'Source Serif 4', Georgia, serif;
-      font-size: 36px;
-      font-weight: 700;
-      font-style: italic;
-      color: #FF4753;
-      letter-spacing: -0.01em;
-      line-height: 1;
-      white-space: nowrap;
-    }
-
-    .selling-price {
-      font-size: 10px;
-      font-weight: 700;
-      color: #ffffff;
-      line-height: 1.35;
-      letter-spacing: 0.01em;
-      text-transform: uppercase;
-      margin-top: 3px;
-    }
-
-    /* ── RIGHT: QR + CONTACT ── */
-    .col-qr {
-      width: 148px;
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 7px;
-      padding: 14px 14px;
-      background: rgba(0,0,0,0.22);
-      border-left: 1px solid rgba(255,255,255,0.06);
+      width: 220%;
+      height: 40px;
+      top: 2%;
+      left: -30%;
+      transform: rotate(45deg);
+    }
+    .sold-text { font-family: 'Source Serif 4', Georgia, serif; font-style: italic; font-weight: 400; font-size: 16px; color: #fff; letter-spacing: 0.02em; }
+
+    /* Month pill — top-left of image */
+    .tile-month-pill {
+      position: absolute; top: 5px; left: 5px;
+      background: #FF4753; border-radius: 20px;
+      padding: 3px 8px;
+      font-family: 'Source Serif 4', Georgia, serif; font-style: italic; font-weight: 400; font-size: 9px; color: #fff;
     }
 
-    .qr-wrap {
-      background: #ffffff;
-      border-radius: 6px;
-      padding: 6px;
-      display: inline-flex;
-      flex-shrink: 0;
-    }
-
-    .qr-wrap svg, .qr-wrap img {
-      display: block;
-      width: 76px;
-      height: 76px;
-    }
-
-    .qr-cta {
-      font-size: 9px;
-      font-weight: 700;
-      color: #FF4753;
-      font-family: 'Source Serif 4', Georgia, serif;
-      font-style: italic;
-      text-align: center;
-      line-height: 1.4;
-    }
-
-    .contact-block {
-      width: 100%;
-      border-top: 1px solid rgba(255,255,255,0.1);
-      padding-top: 7px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1px;
-    }
-
-    .contact-name {
-      font-size: 10px;
-      font-weight: 700;
-      color: #ffffff;
-      text-align: center;
-    }
-
-    .contact-phone {
-      font-size: 10px;
-      font-weight: 600;
-      color: rgba(255,255,255,0.85);
-      text-align: center;
-    }
-
-    .contact-license {
-      font-size: 6px;
-      font-weight: 400;
-      color: rgba(255,255,255,0.4);
-      text-align: center;
-      line-height: 1.4;
-      margin-top: 1px;
-      white-space: nowrap;
-    }
+    /* Tile content below image */
+    .tile-content { flex: 1; padding: 10px 8px 6px; display: flex; flex-direction: column; justify-content: flex-start; gap: 4px; }
+    .tile-addr { font-size: 10px; font-weight: 700; color: #fff; line-height: 1.3; }
+    .tile-sub { font-family: 'Source Serif 4', Georgia, serif; font-style: italic; font-weight: 400; color: #FF4753; }
+    .tile-feats { display: flex; align-items: center; gap: 3px; font-size: 9px; font-weight: 600; color: #fff; flex-wrap: nowrap; }
+    .feat { display: flex; align-items: center; }
+    .feat-sep { color: #FF4753; font-weight: 300; font-size: 11px; line-height: 1; }
 
     /* ── INSTRUCTIONS ── */
     .instructions {
@@ -247,7 +144,7 @@
       border: 1px solid #2a2a2a;
       border-radius: 8px;
       padding: 24px 36px;
-      max-width: 720px;
+      max-width: 800px;
       text-align: center;
       font-size: 12px;
       color: #666;
@@ -257,25 +154,14 @@
     .instructions strong { color: #999; }
     .instructions code { background: #222; color: #FF4753; padding: 1px 6px; border-radius: 3px; font-size: 11px; }
 
-    /* ── PRINT STYLES ── */
+    /* ── PRINT ── */
     @media print {
       body { background: white; padding: 0; gap: 0; }
-      .page-header, .instructions { display: none; }
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(2, 210mm);
-        gap: 0;
-        page-break-inside: avoid;
-      }
-      .ad-wrapper { break-inside: avoid; }
-      .ad {
-        width: 210mm;
-        height: 99mm;
-        border-radius: 0;
-        box-shadow: none;
-        page-break-inside: avoid;
-      }
-      .suburb-label { display: none; }
+      .page-header, .instructions, .suburb-header, .side-label { display: none; }
+      .suburb-section { page-break-after: avoid; }
+      .flyer-pair { gap: 0; flex-direction: column; }
+      .flyer-col { gap: 0; }
+      .ad { width: 210mm; height: 99mm; border-radius: 0; box-shadow: none; page-break-inside: avoid; page-break-after: always; }
       .col-agent { width: 29%; }
       .col-qr { width: 26%; }
     }
@@ -283,7 +169,7 @@
 </head>
 <body>
 
-<!-- Inline SVG logo symbol -->
+<!-- Logo symbol — referenced via <use href="#prof-logo"> throughout the page -->
 <svg style="display:none" aria-hidden="true">
   <defs>
     <symbol id="prof-logo" viewBox="0 0 750 187.5" preserveAspectRatio="xMidYMid meet">
@@ -294,161 +180,281 @@
 </svg>
 
 <div class="page-header">
-  <h1>Professionals Hibiscus Coast — DLE Mailbox Drop</h1>
-  <p>Ed Scanlan &nbsp;·&nbsp; 210 × 99 mm landscape &nbsp;·&nbsp; Print-ready with trackable QR codes</p>
+  <h1>Professionals Hibiscus Coast — DLE Mailbox Drop (Two-Sided)</h1>
+  <p>Ed Scanlan &nbsp;&middot;&nbsp; 210 &times; 99 mm landscape &nbsp;&middot;&nbsp; Front + Back per suburb &nbsp;&middot;&nbsp; Sales loaded live from database at <code>/ads/dle</code></p>
 </div>
 
-<div class="grid">
+<!-- SVG icon snippets reused in sale tiles -->
+<svg style="display:none" aria-hidden="true">
+  <defs>
+    <symbol id="icon-bed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2 17V9.5A1.5 1.5 0 013.5 8h17A1.5 1.5 0 0122 9.5V17"/><path d="M2 13h20"/><path d="M6 13V10a1 1 0 011-1h4a1 1 0 011 1v3"/><line x1="4" y1="17" x2="4" y2="19"/><line x1="20" y1="17" x2="20" y2="19"/>
+    </symbol>
+    <symbol id="icon-bath" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="8" cy="5" r="1" fill="currentColor" stroke="none"/><path d="M8 6v3"/><path d="M6 9h4"/><line x1="5" y1="11" x2="5" y2="12"/><line x1="7" y1="12" x2="7" y2="13"/><line x1="9" y1="11" x2="9" y2="12"/><path d="M2 16h20v1a2 2 0 01-2 2H4a2 2 0 01-2-2v-1z"/><line x1="5" y1="19" x2="5" y2="21"/><line x1="19" y1="19" x2="19" y2="21"/>
+    </symbol>
+    <symbol id="icon-car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 13l1.8-5.4A2 2 0 018.7 6h6.6a2 2 0 011.9 1.6L19 13"/><rect x="2" y="13" width="20" height="5" rx="1"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/><line x1="9" y1="18" x2="15" y2="18"/><path d="M9 9.5h6"/>
+    </symbol>
+  </defs>
+</svg>
 
-  <!-- OREWA -->
-  <div class="ad-wrapper">
-    <span class="suburb-label">Orewa</span>
-    <div class="ad">
-      <div class="col-agent">
-        <img class="agent-img" src="../agent_transparent.webp" alt="Ed Scanlan">
-      </div>
-      <div class="col-content">
-        <div class="top-group">
-          <div class="logo-area">
-            <svg aria-label="Professionals Hibiscus Coast"><use href="#prof-logo"/></svg>
+<!-- ═══════ OREWA ═══════ -->
+<div class="suburb-section">
+  <div class="suburb-header">
+    <span class="suburb-sect-label">Orewa</span>
+    <span class="suburb-sect-sub">Front &middot; Back</span>
+  </div>
+  <div class="flyer-pair">
+    <div class="flyer-col">
+      <span class="side-label">Front</span>
+      <div class="ad">
+        <div class="col-agent">
+          <img class="agent-img" src="../agent_transparent.webp" alt="Ed Scanlan">
+        </div>
+        <div class="col-content">
+          <div class="top-group">
+            <div class="logo-area">
+              <svg aria-label="Professionals Hibiscus Coast" style="width:150px;height:38px;display:block"><use href="#prof-logo"/></svg>
+            </div>
+            <div class="red-rule"></div>
+            <p class="quote">Free Market Appraisal<span class="quote-body">No Pressure. Just Real, Local Insight.</span></p>
           </div>
-          <div class="red-rule"></div>
-          <p class="quote">Free Market Appraisal<span class="quote-body">No Pressure. Just Real, Local Insight.</span></p>
+          <div class="headline-block">
+            <span class="check-your">Check Your</span>
+            <span class="suburb-name">Orewa</span>
+            <span class="selling-price">Home&rsquo;s Estimated Selling Price</span>
+          </div>
         </div>
-        <div class="headline-block">
-          <span class="check-your">Check Your</span>
-          <span class="suburb-name">Orewa</span>
-          <span class="selling-price">Home's Estimated Selling Price</span>
+        <div class="col-qr">
+          <div class="qr-wrap"><div id="qr-orewa"></div></div>
+          <span class="qr-cta">Scan to find your<br>home&rsquo;s value</span>
+          <div class="contact-block">
+            <span class="contact-name">Ed Scanlan</span>
+            <span class="contact-phone">021 814 578</span>
+            <span class="contact-license">Meros Group Realty Licenced REAA (2008)</span>
+          </div>
         </div>
       </div>
-      <div class="col-qr">
-        <div class="qr-wrap">
-          <div id="qr-orewa"></div>
+    </div>
+    <div class="flyer-col">
+      <span class="side-label">Back</span>
+      <div class="ad back-ad">
+        <div class="back-header">
+          <div class="bh-heading">
+            <span class="bh-suburb">Hibiscus Coast</span>
+            <span class="bh-title">Recent Results</span>
+          </div>
+          <div class="bh-spacer"></div>
+          <div class="bh-tagline">Proven local results by Ed Scanlan &middot; 021 814 578</div>
         </div>
-        <span class="qr-cta">Scan to find your<br>home's value</span>
-        <div class="contact-block">
-          <span class="contact-name">Ed Scanlan</span>
-          <span class="contact-phone">021 814 578</span>
-          <span class="contact-license">Meros Group Realty Licenced REAA (2008)</span>
+        <div class="back-red-rule"></div>
+        <div class="sales-row" id="sales-orewa">
+          <div class="sale-tile"></div>
+          <div class="tile-sep"></div>
+          <div class="sale-tile"></div>
+          <div class="tile-sep"></div>
+          <div class="sale-tile"></div>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- MILLWATER -->
-  <div class="ad-wrapper">
-    <span class="suburb-label">Millwater</span>
-    <div class="ad">
-      <div class="col-agent">
-        <img class="agent-img" src="../agent_transparent.webp" alt="Ed Scanlan">
-      </div>
-      <div class="col-content">
-        <div class="top-group">
-          <div class="logo-area">
-            <svg aria-label="Professionals Hibiscus Coast"><use href="#prof-logo"/></svg>
+<!-- ═══════ MILLWATER ═══════ -->
+<div class="suburb-section">
+  <div class="suburb-header">
+    <span class="suburb-sect-label">Millwater</span>
+    <span class="suburb-sect-sub">Front &middot; Back</span>
+  </div>
+  <div class="flyer-pair">
+    <div class="flyer-col">
+      <span class="side-label">Front</span>
+      <div class="ad">
+        <div class="col-agent">
+          <img class="agent-img" src="../agent_transparent.webp" alt="Ed Scanlan">
+        </div>
+        <div class="col-content">
+          <div class="top-group">
+            <div class="logo-area">
+              <svg aria-label="Professionals Hibiscus Coast" style="width:150px;height:38px;display:block"><use href="#prof-logo"/></svg>
+            </div>
+            <div class="red-rule"></div>
+            <p class="quote">Free Market Appraisal<span class="quote-body">No Pressure. Just Real, Local Insight.</span></p>
           </div>
-          <div class="red-rule"></div>
-          <p class="quote">Free Market Appraisal<span class="quote-body">No Pressure. Just Real, Local Insight.</span></p>
+          <div class="headline-block">
+            <span class="check-your">Check Your</span>
+            <span class="suburb-name">Millwater</span>
+            <span class="selling-price">Home&rsquo;s Estimated Selling Price</span>
+          </div>
         </div>
-        <div class="headline-block">
-          <span class="check-your">Check Your</span>
-          <span class="suburb-name">Millwater</span>
-          <span class="selling-price">Home's Estimated Selling Price</span>
+        <div class="col-qr">
+          <div class="qr-wrap"><div id="qr-millwater"></div></div>
+          <span class="qr-cta">Scan to find your<br>home&rsquo;s value</span>
+          <div class="contact-block">
+            <span class="contact-name">Ed Scanlan</span>
+            <span class="contact-phone">021 814 578</span>
+            <span class="contact-license">Meros Group Realty Licenced REAA (2008)</span>
+          </div>
         </div>
       </div>
-      <div class="col-qr">
-        <div class="qr-wrap">
-          <div id="qr-millwater"></div>
+    </div>
+    <div class="flyer-col">
+      <span class="side-label">Back</span>
+      <div class="ad back-ad">
+        <div class="back-header">
+          <div class="bh-heading">
+            <span class="bh-suburb">Hibiscus Coast</span>
+            <span class="bh-title">Recent Results</span>
+          </div>
+          <div class="bh-spacer"></div>
+          <div class="bh-tagline">Proven local results by Ed Scanlan &middot; 021 814 578</div>
         </div>
-        <span class="qr-cta">Scan to find your<br>home's value</span>
-        <div class="contact-block">
-          <span class="contact-name">Ed Scanlan</span>
-          <span class="contact-phone">021 814 578</span>
-          <span class="contact-license">Meros Group Realty Licenced REAA (2008)</span>
+        <div class="back-red-rule"></div>
+        <div class="sales-row" id="sales-millwater">
+          <div class="sale-tile"></div>
+          <div class="tile-sep"></div>
+          <div class="sale-tile"></div>
+          <div class="tile-sep"></div>
+          <div class="sale-tile"></div>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- MILLDALE -->
-  <div class="ad-wrapper">
-    <span class="suburb-label">Milldale</span>
-    <div class="ad">
-      <div class="col-agent">
-        <img class="agent-img" src="../agent_transparent.webp" alt="Ed Scanlan">
-      </div>
-      <div class="col-content">
-        <div class="top-group">
-          <div class="logo-area">
-            <svg aria-label="Professionals Hibiscus Coast"><use href="#prof-logo"/></svg>
+<!-- ═══════ MILLDALE ═══════ -->
+<div class="suburb-section">
+  <div class="suburb-header">
+    <span class="suburb-sect-label">Milldale</span>
+    <span class="suburb-sect-sub">Front &middot; Back</span>
+  </div>
+  <div class="flyer-pair">
+    <div class="flyer-col">
+      <span class="side-label">Front</span>
+      <div class="ad">
+        <div class="col-agent">
+          <img class="agent-img" src="../agent_transparent.webp" alt="Ed Scanlan">
+        </div>
+        <div class="col-content">
+          <div class="top-group">
+            <div class="logo-area">
+              <svg aria-label="Professionals Hibiscus Coast" style="width:150px;height:38px;display:block"><use href="#prof-logo"/></svg>
+            </div>
+            <div class="red-rule"></div>
+            <p class="quote">Free Market Appraisal<span class="quote-body">No Pressure. Just Real, Local Insight.</span></p>
           </div>
-          <div class="red-rule"></div>
-          <p class="quote">Free Market Appraisal<span class="quote-body">No Pressure. Just Real, Local Insight.</span></p>
+          <div class="headline-block">
+            <span class="check-your">Check Your</span>
+            <span class="suburb-name">Milldale</span>
+            <span class="selling-price">Home&rsquo;s Estimated Selling Price</span>
+          </div>
         </div>
-        <div class="headline-block">
-          <span class="check-your">Check Your</span>
-          <span class="suburb-name">Milldale</span>
-          <span class="selling-price">Home's Estimated Selling Price</span>
+        <div class="col-qr">
+          <div class="qr-wrap"><div id="qr-milldale"></div></div>
+          <span class="qr-cta">Scan to find your<br>home&rsquo;s value</span>
+          <div class="contact-block">
+            <span class="contact-name">Ed Scanlan</span>
+            <span class="contact-phone">021 814 578</span>
+            <span class="contact-license">Meros Group Realty Licenced REAA (2008)</span>
+          </div>
         </div>
       </div>
-      <div class="col-qr">
-        <div class="qr-wrap">
-          <div id="qr-milldale"></div>
+    </div>
+    <div class="flyer-col">
+      <span class="side-label">Back</span>
+      <div class="ad back-ad">
+        <div class="back-header">
+          <div class="bh-heading">
+            <span class="bh-suburb">Hibiscus Coast</span>
+            <span class="bh-title">Recent Results</span>
+          </div>
+          <div class="bh-spacer"></div>
+          <div class="bh-tagline">Proven local results by Ed Scanlan &middot; 021 814 578</div>
         </div>
-        <span class="qr-cta">Scan to find your<br>home's value</span>
-        <div class="contact-block">
-          <span class="contact-name">Ed Scanlan</span>
-          <span class="contact-phone">021 814 578</span>
-          <span class="contact-license">Meros Group Realty Licenced REAA (2008)</span>
+        <div class="back-red-rule"></div>
+        <div class="sales-row" id="sales-milldale">
+          <div class="sale-tile"></div>
+          <div class="tile-sep"></div>
+          <div class="sale-tile"></div>
+          <div class="tile-sep"></div>
+          <div class="sale-tile"></div>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- RED BEACH -->
-  <div class="ad-wrapper">
-    <span class="suburb-label">Red Beach</span>
-    <div class="ad">
-      <div class="col-agent">
-        <img class="agent-img" src="../agent_transparent.webp" alt="Ed Scanlan">
-      </div>
-      <div class="col-content">
-        <div class="top-group">
-          <div class="logo-area">
-            <svg aria-label="Professionals Hibiscus Coast"><use href="#prof-logo"/></svg>
+<!-- ═══════ RED BEACH ═══════ -->
+<div class="suburb-section">
+  <div class="suburb-header">
+    <span class="suburb-sect-label">Red Beach</span>
+    <span class="suburb-sect-sub">Front &middot; Back</span>
+  </div>
+  <div class="flyer-pair">
+    <div class="flyer-col">
+      <span class="side-label">Front</span>
+      <div class="ad">
+        <div class="col-agent">
+          <img class="agent-img" src="../agent_transparent.webp" alt="Ed Scanlan">
+        </div>
+        <div class="col-content">
+          <div class="top-group">
+            <div class="logo-area">
+              <svg aria-label="Professionals Hibiscus Coast" style="width:150px;height:38px;display:block"><use href="#prof-logo"/></svg>
+            </div>
+            <div class="red-rule"></div>
+            <p class="quote">Free Market Appraisal<span class="quote-body">No Pressure. Just Real, Local Insight.</span></p>
           </div>
-          <div class="red-rule"></div>
-          <p class="quote">Free Market Appraisal<span class="quote-body">No Pressure. Just Real, Local Insight.</span></p>
+          <div class="headline-block">
+            <span class="check-your">Check Your</span>
+            <span class="suburb-name">Red Beach</span>
+            <span class="selling-price">Home&rsquo;s Estimated Selling Price</span>
+          </div>
         </div>
-        <div class="headline-block">
-          <span class="check-your">Check Your</span>
-          <span class="suburb-name">Red Beach</span>
-          <span class="selling-price">Home's Estimated Selling Price</span>
+        <div class="col-qr">
+          <div class="qr-wrap"><div id="qr-redbeach"></div></div>
+          <span class="qr-cta">Scan to find your<br>home&rsquo;s value</span>
+          <div class="contact-block">
+            <span class="contact-name">Ed Scanlan</span>
+            <span class="contact-phone">021 814 578</span>
+            <span class="contact-license">Meros Group Realty Licenced REAA (2008)</span>
+          </div>
         </div>
       </div>
-      <div class="col-qr">
-        <div class="qr-wrap">
-          <div id="qr-redbeach"></div>
+    </div>
+    <div class="flyer-col">
+      <span class="side-label">Back</span>
+      <div class="ad back-ad">
+        <div class="back-header">
+          <div class="bh-heading">
+            <span class="bh-suburb">Hibiscus Coast</span>
+            <span class="bh-title">Recent Results</span>
+          </div>
+          <div class="bh-spacer"></div>
+          <div class="bh-tagline">Proven local results by Ed Scanlan &middot; 021 814 578</div>
         </div>
-        <span class="qr-cta">Scan to find your<br>home's value</span>
-        <div class="contact-block">
-          <span class="contact-name">Ed Scanlan</span>
-          <span class="contact-phone">021 814 578</span>
-          <span class="contact-license">Meros Group Realty Licenced REAA (2008)</span>
+        <div class="back-red-rule"></div>
+        <div class="sales-row" id="sales-redbeach">
+          <div class="sale-tile"></div>
+          <div class="tile-sep"></div>
+          <div class="sale-tile"></div>
+          <div class="tile-sep"></div>
+          <div class="sale-tile"></div>
         </div>
       </div>
     </div>
   </div>
-
-</div><!-- end .grid -->
+</div>
 
 <div class="instructions">
   <h3>Print Instructions</h3>
-  Each ad is sized at <strong>210 × 99 mm</strong> (DLE landscape). To export for print:<br>
-  Use <strong>File → Print → Save as PDF</strong> at <strong>300dpi</strong>, landscape orientation, with no scaling.<br>
-  Or right-click each ad and screenshot at 2× for a 1120 × 528px digital version.<br><br>
-  QR codes link to suburb-specific landing pages and are tagged <code>utm_medium=print</code> so<br>
-  mailbox drop leads appear separately from Meta leads in HubSpot.
+  Each DLE is <strong>210 &times; 99 mm</strong> landscape (front shown left, back shown right).<br>
+  To export: <strong>File &rarr; Print &rarr; Save as PDF</strong>, landscape orientation, no scaling.<br>
+  Send fronts and backs as separate files to your print house, or screenshot each at 2&times; for a <strong>1120 &times; 528 px</strong> digital version.<br><br>
+  For live sales data visit <code>/ads/dle</code> — this static file shows the layout only.<br>
+  QR codes link to suburb-specific landing pages tagged <code>utm_medium=print</code> so<br>
+  mailbox drop leads appear separately in HubSpot.
 </div>
 
 <script>
@@ -457,6 +463,7 @@
     qr.addData(url);
     qr.make();
     var el = document.getElementById(elementId);
+    if (!el) return;
     el.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
     var svg = el.querySelector('svg');
     if (svg) { svg.style.width = '76px'; svg.style.height = '76px'; }
@@ -466,6 +473,129 @@
   makeQR('qr-millwater', 'https://leads.edscanlan.co.nz?suburb=Millwater&utm_medium=print');
   makeQR('qr-milldale',  'https://leads.edscanlan.co.nz?suburb=Milldale&utm_medium=print');
   makeQR('qr-redbeach',  'https://leads.edscanlan.co.nz?suburb=Red+Beach&utm_medium=print');
+
+  /* ── Load live sales from the API and render them into the back tiles ── */
+  var BED_ICON  = '<svg style="width:12px;height:12px;vertical-align:middle;margin-right:2px;display:inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 17V9.5A1.5 1.5 0 013.5 8h17A1.5 1.5 0 0122 9.5V17"/><path d="M2 13h20"/><path d="M6 13V10a1 1 0 011-1h4a1 1 0 011 1v3"/><line x1="4" y1="17" x2="4" y2="19"/><line x1="20" y1="17" x2="20" y2="19"/></svg>';
+  var BATH_ICON = '<svg style="width:12px;height:12px;vertical-align:middle;margin-right:2px;display:inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="5" r="1" fill="currentColor" stroke="none"/><path d="M8 6v3"/><path d="M6 9h4"/><line x1="5" y1="11" x2="5" y2="12"/><line x1="7" y1="12" x2="7" y2="13"/><line x1="9" y1="11" x2="9" y2="12"/><path d="M2 16h20v1a2 2 0 01-2 2H4a2 2 0 01-2-2v-1z"/><line x1="5" y1="19" x2="5" y2="21"/><line x1="19" y1="19" x2="19" y2="21"/></svg>';
+  var CAR_ICON  = '<svg style="width:12px;height:12px;vertical-align:middle;margin-right:2px;display:inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l1.8-5.4A2 2 0 018.7 6h6.6a2 2 0 011.9 1.6L19 13"/><rect x="2" y="13" width="20" height="5" rx="1"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/><line x1="9" y1="18" x2="15" y2="18"/><path d="M9 9.5h6"/></svg>';
+
+  var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  var PROXIMITY = {
+    'Orewa':     ['Orewa', 'Red Beach', 'Millwater', 'Milldale'],
+    'Millwater': ['Millwater', 'Milldale', 'Orewa', 'Red Beach'],
+    'Milldale':  ['Milldale', 'Millwater', 'Orewa', 'Red Beach'],
+    'Red Beach': ['Red Beach', 'Orewa', 'Millwater', 'Milldale'],
+  };
+
+  function detectSuburb(address) {
+    var l = address.toLowerCase();
+    if (l.indexOf('red beach') !== -1) return 'Red Beach';
+    if (l.indexOf('orewa') !== -1)     return 'Orewa';
+    if (l.indexOf('millwater') !== -1) return 'Millwater';
+    if (l.indexOf('milldale') !== -1)  return 'Milldale';
+    return 'Other';
+  }
+
+  function toMonthNum(d) {
+    if (!d) return 0;
+    var parts = d.split(' ');
+    var mi = MONTHS.indexOf(parts[0]);
+    var y = parseInt(parts[1]);
+    return (isNaN(y) || mi === -1) ? 0 : y * 12 + mi;
+  }
+
+  function sortSales(sales) {
+    return sales.slice().sort(function(a, b) {
+      var diff = toMonthNum(b.days) - toMonthNum(a.days);
+      return diff !== 0 ? diff : new Date(b.updated_at || 0) - new Date(a.updated_at || 0);
+    });
+  }
+
+  function getSalesForSuburb(sorted, suburb) {
+    var order = PROXIMITY[suburb];
+    var result = [], used = {};
+    for (var oi = 0; oi < order.length; oi++) {
+      if (result.length >= 4) break;
+      for (var si = 0; si < sorted.length; si++) {
+        if (result.length >= 4) break;
+        var sale = sorted[si];
+        if (!used[sale.id] && detectSuburb(sale.address) === order[oi]) {
+          result.push(sale);
+          used[sale.id] = true;
+        }
+      }
+    }
+    return result;
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function renderTile(sale) {
+    if (!sale) return '<div class="sale-tile"></div>';
+    var lastComma = sale.address.lastIndexOf(',');
+    var street = lastComma > 0 ? sale.address.slice(0, lastComma).trim() : sale.address;
+    var suburb = lastComma > 0 ? sale.address.slice(lastComma + 1).trim() : '';
+    var feats = [];
+    if (sale.beds)    feats.push('<span class="feat">' + BED_ICON + esc(sale.beds) + '</span>');
+    if (sale.baths)   feats.push('<span class="feat">' + BATH_ICON + esc(sale.baths) + '</span>');
+    if (sale.parking) feats.push('<span class="feat">' + CAR_ICON + esc(sale.parking) + '</span>');
+    var featHtml = feats.length ? '<div class="tile-feats">' + feats.join('<span class="feat-sep">|</span>') + '</div>' : '';
+    var pillHtml = sale.days ? '<div class="tile-month-pill">' + esc(sale.days) + '</div>' : '';
+    var suburbHtml = suburb ? ',<br><span class="tile-sub">' + esc(suburb) + '</span>' : '';
+    return '<div class="sale-tile">'
+      + '<div class="tile-img-wrap">'
+      + (sale.image ? '<img class="tile-img" src="' + esc(sale.image) + '" alt="' + esc(sale.address) + '" loading="eager">' : '')
+      + '<div class="sold-wrap"><div class="sold-band"><span class="sold-text">Sold</span></div></div>'
+      + pillHtml
+      + '</div>'
+      + '<div class="tile-content">'
+      + '<p class="tile-addr">' + esc(street) + suburbHtml + '</p>'
+      + featHtml
+      + '</div></div>';
+  }
+
+  function fillSalesRow(containerId, sales) {
+    var el = document.getElementById(containerId);
+    if (!el) return;
+    var html = '';
+    for (var i = 0; i < 3; i++) {
+      if (i > 0) html += '<div class="tile-sep"></div>';
+      html += renderTile(sales[i] || null);
+    }
+    el.innerHTML = html;
+  }
+
+  fetch('/ads/dle')
+    .then(function(r) { return r.text(); })
+    .then(function(html) {
+      /* The route returns a full HTML page — parse it and grab the sales-row contents */
+      var parser = new DOMParser();
+      var doc = parser.parseFromString(html, 'text/html');
+      var suburbs = ['orewa', 'millwater', 'milldale', 'redbeach'];
+      var suburbNames = { orewa: 'Orewa', millwater: 'Millwater', milldale: 'Milldale', redbeach: 'Red Beach' };
+      suburbs.forEach(function(key) {
+        /* Copy the rendered sales-row tiles from the API response into our tiles */
+        var srcRow = doc.querySelector('.suburb-section .back-ad .sales-row');
+        /* We need to match by suburb name — find the section whose bh-suburb matches */
+        var sections = doc.querySelectorAll('.suburb-section');
+        sections.forEach(function(section) {
+          var bhSuburb = section.querySelector('.bh-suburb');
+          if (!bhSuburb) return;
+          var name = bhSuburb.textContent.trim().toLowerCase().replace(' ', '');
+          if (name === key) {
+            var row = section.querySelector('.sales-row');
+            if (row) {
+              var dest = document.getElementById('sales-' + key);
+              if (dest) dest.innerHTML = row.innerHTML;
+            }
+          }
+        });
+      });
+    })
+    .catch(function() { /* server not running — placeholders stay */ });
 </script>
 
 </body>
