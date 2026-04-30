@@ -297,7 +297,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ s
                 <a href={`mailto:${agentEmail}`} className="text-white font-semibold text-sm hover:text-white/70 transition-all">
                   {agentEmail}
                 </a>
-                <p className="text-slate-300 text-xs">Licensed Salesperson (REAA 2008)</p>
+                <p className="text-slate-300 text-xs">Meros Group Realty Licenced REAA (2008)</p>
               </div>
               <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-white/60 shadow-lg shrink-0 bg-slate-100">
                 <Image
