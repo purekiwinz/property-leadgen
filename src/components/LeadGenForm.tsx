@@ -116,6 +116,13 @@ export default function LeadGenForm({ suburb = '', medium = '' }: { suburb?: str
         (window as any).fbq('track', 'Lead', suburb ? { content_name: suburb, content_category: 'suburb' } : {});
       }
 
+      if (typeof window !== 'undefined' && (window as any).gtag) {
+        const googleAdsId = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
+        if (googleAdsId) {
+          (window as any).gtag('event', 'generate_lead', { send_to: googleAdsId });
+        }
+      }
+
       const linkedinConversionId = process.env.NEXT_PUBLIC_LINKEDIN_CONVERSION_ID;
       if (linkedinConversionId && typeof window !== 'undefined' && (window as any).lintrk) {
         (window as any).lintrk('track', { conversion_id: parseInt(linkedinConversionId, 10) });

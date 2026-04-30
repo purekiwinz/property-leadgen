@@ -28,6 +28,7 @@ export default function RootLayout({
 }>) {
   const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
   const linkedinPartnerId = process.env.NEXT_PUBLIC_LINKEDIN_PARTNER_ID;
+  const googleAdsId = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
 
   return (
     <html lang="en">
@@ -50,6 +51,24 @@ export default function RootLayout({
               fbq('track', 'PageView');
             `}
           </Script>
+        )}
+
+        {/* Google Ads — global site tag (remarketing + conversion tracking) */}
+        {googleAdsId && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${googleAdsId}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-ads" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${googleAdsId}');
+              `}
+            </Script>
+          </>
         )}
 
         {/* LinkedIn Insight Tag */}
