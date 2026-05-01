@@ -163,15 +163,17 @@ function a4Page(dles: string[], isFirst: boolean): string {
 function generateHtml(sales: Sale[]): string {
   const sorted = sortSales(sales.filter(s => s.image));
 
-  const fronts = SUBURBS.map(s => renderFront(s));
-  const backs  = SUBURBS.map(s => renderBack(s, getSalesForSuburb(sorted, s)));
+  // 2 A4 pages per suburb: 3× front then 3× back
+  const pages = SUBURBS.flatMap((suburb, i) => {
+    const front = renderFront(suburb);
+    const back  = renderBack(suburb, getSalesForSuburb(sorted, suburb));
+    return [
+      a4Page([front, front, front], i === 0),
+      a4Page([back,  back,  back],  false),
+    ];
+  });
 
-  const empty = `<div class="dle dle-empty"></div>`;
-
-  const page1 = a4Page([fronts[0], fronts[1], fronts[2]], true);
-  const page2 = a4Page([fronts[3], empty, empty], false);
-  const page3 = a4Page([backs[0],  backs[1],  backs[2]], false);
-  const page4 = a4Page([backs[3],  empty, empty], false);
+  const pagesHtml = pages.join('\n');
 
   const qrScript = SUBURBS.map(s => {
     const qr = QR_MAP[s];
@@ -402,14 +404,11 @@ function generateHtml(sales: Sale[]): string {
 
 <div class="screen-header">
   <strong>Ed Scanlan DLE — Print-Ready A4 PDF</strong><br>
-  3 DLEs per A4 page &nbsp;·&nbsp; Pages 1–2: Fronts &nbsp;·&nbsp; Pages 3–4: Backs &nbsp;·&nbsp; Dashed lines = cut marks<br>
+  8 pages &nbsp;·&nbsp; 3-up per A4 &nbsp;·&nbsp; Front then back per suburb &nbsp;·&nbsp; Dashed lines = cut marks<br>
   <strong>To export:</strong> File → Print → Save as PDF &nbsp;·&nbsp; Enable <code>Background graphics</code> in More settings
 </div>
 
-${page1}
-${page2}
-${page3}
-${page4}
+${pagesHtml}
 
 <script>
   function makeQR(elementId, url) {
