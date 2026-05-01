@@ -69,7 +69,7 @@ async function addToMetaSyncList(token: string, contactId: string) {
   const res = await fetch(`https://api.hubapi.com/crm/v3/lists/${listId}/memberships/add`, {
     method: "PUT",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-    body: JSON.stringify({ recordIds: [contactId] }),
+    body: JSON.stringify([contactId]),
   });
 
   if (!res.ok) {
