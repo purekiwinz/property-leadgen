@@ -14,6 +14,7 @@ type FormData = {
   lastName: string;
   email: string;
   phone: string;
+  optInMarketing: boolean;
 };
 
 const SUBURB_PLACEHOLDER: Record<string, string> = {
@@ -60,9 +61,10 @@ export default function LeadGenForm({ suburb = '', medium = '' }: { suburb?: str
     lastName: "",
     email: "",
     phone: "",
+    optInMarketing: false,
   });
 
-  const updateForm = (field: keyof FormData, value: string) => {
+  const updateForm = (field: keyof FormData, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -105,6 +107,7 @@ export default function LeadGenForm({ suburb = '', medium = '' }: { suburb?: str
           lastName: formData.lastName,
           email: formData.email,
           phone: formData.phone,
+          optInMarketing: formData.optInMarketing,
           suburb,
           medium,
         }),
@@ -252,7 +255,13 @@ export default function LeadGenForm({ suburb = '', medium = '' }: { suburb?: str
                 {["ASAP", "3-6 Months", "6-12 Months", "Just curious"].map((time) => (
                   <button
                     key={time}
-                    onClick={() => { updateForm("timeline", time); nextStep(); }}
+                    onClick={() => {
+                      updateForm("timeline", time);
+                      if (typeof window !== 'undefined' && (window as any).fbq) {
+                        (window as any).fbq('trackCustom', 'FormStep', { step_name: 'selling_timeline', value: time, suburb: suburb || 'unknown' });
+                      }
+                      nextStep();
+                    }}
                     className={`p-3 sm:p-4 border-2 rounded-2xl text-sm sm:text-lg font-bold transition-all ${
                       formData.timeline === time
                         ? "border-[#FF4753] bg-[#FF4753]/15 text-white"
@@ -288,7 +297,13 @@ export default function LeadGenForm({ suburb = '', medium = '' }: { suburb?: str
                 {["Yes, I need to buy", "No, just selling for now"].map((option) => (
                   <button
                     key={option}
-                    onClick={() => { updateForm("buyingNext", option); nextStep(); }}
+                    onClick={() => {
+                      updateForm("buyingNext", option);
+                      if (typeof window !== 'undefined' && (window as any).fbq) {
+                        (window as any).fbq('trackCustom', 'FormStep', { step_name: 'buying_intent', value: option, suburb: suburb || 'unknown' });
+                      }
+                      nextStep();
+                    }}
                     className={`p-3 sm:p-4 border-2 rounded-2xl text-sm sm:text-lg font-bold transition-all flex items-center gap-3 sm:gap-4 ${
                       formData.buyingNext === option
                         ? "border-[#FF4753] bg-[#FF4753]/15 text-white"
@@ -387,6 +402,23 @@ export default function LeadGenForm({ suburb = '', medium = '' }: { suburb?: str
                     Licensed REAA 2008. Your information is protected under the NZ Privacy Act 2020.
                   </p>
                 </div>
+
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={formData.optInMarketing}
+                    onChange={(e) => {
+                      updateForm("optInMarketing", e.target.checked);
+                      if (e.target.checked && typeof window !== 'undefined' && (window as any).fbq) {
+                        (window as any).fbq('track', 'Subscribe', { content_name: "Ed's Quarterly Market Update", content_category: 'newsletter' });
+                      }
+                    }}
+                    className="mt-0.5 w-4 h-4 shrink-0 accent-[#FF4753] cursor-pointer"
+                  />
+                  <span className="text-xs text-white/60 leading-snug group-hover:text-white/80 transition-colors">
+                    Yes — send me Ed&apos;s <span className="text-white font-semibold">Quarterly Market Update</span> and keep me informed about the Hibiscus Coast market. You can unsubscribe any time.
+                  </span>
+                </label>
 
                 {submitError && (
                   <p className="text-red-400 text-sm font-bold text-center">{submitError}</p>

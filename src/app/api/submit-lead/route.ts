@@ -29,6 +29,7 @@ async function pushToHubSpot(data: {
   address: string;
   timeline: string;
   buyingNext: string;
+  optInMarketing: boolean;
   suburb: string;
   medium: string;
 }) {
@@ -42,6 +43,7 @@ async function pushToHubSpot(data: {
     `Email: ${data.email}`,
     `Timeline: ${data.timeline}`,
     `Buying next: ${data.buyingNext}`,
+    `Marketing opt-in: ${data.optInMarketing ? 'Yes — Quarterly Market Update' : 'No'}`,
     data.suburb ? `Ad suburb: ${data.suburb}` : '',
   ].filter(Boolean).join('\n');
 
@@ -138,7 +140,7 @@ export async function POST(req: NextRequest) {
   );
 
   const body = await req.json();
-  const { address, timeline, buyingNext, firstName, lastName, email, phone, suburb, medium } = body;
+  const { address, timeline, buyingNext, firstName, lastName, email, phone, optInMarketing, suburb, medium } = body;
 
   const { error } = await supabase.from("appraisal_leads").insert([{
     address, timeline, buying_next: buyingNext,
@@ -152,7 +154,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  await pushToHubSpot({ firstName, lastName, email, phone, address, timeline, buyingNext, suburb: suburb || '', medium: medium || '' }).catch(
+  await pushToHubSpot({ firstName, lastName, email, phone, address, timeline, buyingNext, optInMarketing: !!optInMarketing, suburb: suburb || '', medium: medium || '' }).catch(
     (e) => console.error("HubSpot push failed:", e)
   );
 
