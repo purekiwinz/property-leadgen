@@ -416,7 +416,7 @@ export default function LeadGenForm({ suburb = '', medium = '' }: { suburb?: str
                     className="mt-1 w-5 h-5 shrink-0 accent-[#FF4753] cursor-pointer"
                   />
                   <span className="text-sm text-white/70 leading-snug group-hover:text-white/90 transition-colors">
-                    Yes — send me Ed&apos;s <span className="text-white font-bold">Quarterly Market Update</span> and keep me informed about the Hibiscus Coast market. You can unsubscribe any time.
+                    <span className="text-white font-bold">Tick</span> to receive Ed&apos;s Quarterly report on local property sales and to keep me informed about the Hibiscus Coast market. You can unsubscribe any time.
                   </span>
                 </label>
 
