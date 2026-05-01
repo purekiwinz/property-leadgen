@@ -31,9 +31,9 @@ function esc(s: string) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-const BED_ICON  = `<svg style="width:3mm;height:3mm;vertical-align:middle;margin-right:0.6mm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 17V9.5A1.5 1.5 0 013.5 8h17A1.5 1.5 0 0122 9.5V17"/><path d="M2 13h20"/><path d="M6 13V10a1 1 0 011-1h4a1 1 0 011 1v3"/><line x1="4" y1="17" x2="4" y2="19"/><line x1="20" y1="17" x2="20" y2="19"/></svg>`;
-const BATH_ICON = `<svg style="width:3mm;height:3mm;vertical-align:middle;margin-right:0.6mm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="5" r="1" fill="currentColor" stroke="none"/><path d="M8 6v3"/><path d="M6 9h4"/><path d="M2 16h20v1a2 2 0 01-2 2H4a2 2 0 01-2-2v-1z"/><line x1="5" y1="19" x2="5" y2="21"/><line x1="19" y1="19" x2="19" y2="21"/></svg>`;
-const CAR_ICON  = `<svg style="width:3mm;height:3mm;vertical-align:middle;margin-right:0.6mm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l1.8-5.4A2 2 0 018.7 6h6.6a2 2 0 011.9 1.6L19 13"/><rect x="2" y="13" width="20" height="5" rx="1"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>`;
+const BED_ICON  = `<svg style="width:3.2mm;height:3.2mm;vertical-align:middle;margin-right:0.8mm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 17V9.5A1.5 1.5 0 013.5 8h17A1.5 1.5 0 0122 9.5V17"/><path d="M2 13h20"/><path d="M6 13V10a1 1 0 011-1h4a1 1 0 011 1v3"/><line x1="4" y1="17" x2="4" y2="19"/><line x1="20" y1="17" x2="20" y2="19"/></svg>`;
+const BATH_ICON = `<svg style="width:3.2mm;height:3.2mm;vertical-align:middle;margin-right:0.8mm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="5" r="1" fill="currentColor" stroke="none"/><path d="M8 6v3"/><path d="M6 9h4"/><path d="M2 16h20v1a2 2 0 01-2 2H4a2 2 0 01-2-2v-1z"/><line x1="5" y1="19" x2="5" y2="21"/><line x1="19" y1="19" x2="19" y2="21"/></svg>`;
+const CAR_ICON  = `<svg style="width:3.2mm;height:3.2mm;vertical-align:middle;margin-right:0.8mm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l1.8-5.4A2 2 0 018.7 6h6.6a2 2 0 011.9 1.6L19 13"/><rect x="2" y="13" width="20" height="5" rx="1"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>`;
 
 function renderCard(sale: Sale): string {
   const lastComma = sale.address.lastIndexOf(',');
@@ -46,15 +46,12 @@ function renderCard(sale: Sale): string {
   if (sale.parking) feats.push(`${CAR_ICON}${sale.parking}`);
 
   return `<div class="card">
-    <div class="card-img-wrap">
-      ${sale.image ? `<img class="card-img" src="${esc(sale.image)}" alt="${esc(sale.address)}">` : '<div class="card-no-img"></div>'}
-      <div class="sold-wrap"><div class="sold-band"><span class="sold-text">Sold</span></div></div>
-      ${sale.days ? `<div class="month-pill">${esc(sale.days)}</div>` : ''}
-    </div>
-    <div class="card-body">
+    <img class="card-img" src="${esc(sale.image!)}" alt="${esc(sale.address)}">
+    <div class="sold-wrap"><div class="sold-band"><span class="sold-text">Sold</span></div></div>
+    <div class="card-content">
       <p class="card-street">${esc(street)}</p>
       ${suburb ? `<p class="card-suburb">${esc(suburb)}</p>` : ''}
-      ${feats.length ? `<div class="card-feats">${feats.join('<span class="sep"> | </span>')}</div>` : ''}
+      ${feats.length ? `<div class="card-feats">${feats.join('<span class="feat-sep"> | </span>')}</div>` : ''}
     </div>
   </div>`;
 }
@@ -67,10 +64,10 @@ function generateHtml(sales: Sale[]): string {
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Our Recent Sales — Ed Scanlan</title>
+  <title>Recent Sales — Ed Scanlan</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&family=Source+Serif+4:ital,opsz,wght@1,8,400;1,8,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Source+Serif+4:ital,opsz,wght@0,8,400;1,8,400;1,8,700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -88,163 +85,143 @@ function generateHtml(sales: Sale[]): string {
       color: #252525;
       display: flex;
       flex-direction: column;
-      padding: 11mm 12mm 10mm;
+      padding: 12mm 12mm 10mm;
       print-color-adjust: exact;
       -webkit-print-color-adjust: exact;
     }
 
-    /* ── Heading — matches "Our / Difference" from INTRO exactly ── */
+    /* ── Pill tag — matches "Meet The Team" style from INTRO p.3 ── */
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      background: #CC2229;
+      padding: 1.5mm 5mm;
+      margin-bottom: 4mm;
+      flex-shrink: 0;
+      align-self: flex-start;
+    }
+    .pill-text {
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: 11pt;
+      color: #fff;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Main heading — large, bold, two lines, no italic ── */
     .heading {
       flex-shrink: 0;
-      margin-bottom: 3.5mm;
+      margin-bottom: 6mm;
     }
-    .heading-our {
-      font-size: 44pt;
-      font-weight: 900;
+    .heading-line {
+      font-size: 52pt;
+      font-weight: 800;
       color: #252525;
-      line-height: 1;
+      line-height: 1.0;
       letter-spacing: -0.02em;
       display: block;
     }
-    .heading-italic {
-      font-family: 'Source Serif 4', Georgia, serif;
-      font-style: italic;
-      font-weight: 700;
-      font-size: 48pt;
-      color: #CC2229;
-      line-height: 1;
-      display: block;
-    }
 
-    /* ── Red rule — same as INTRO body separator ── */
-    .red-rule {
-      flex-shrink: 0;
-      height: 0.5mm;
-      background: #CC2229;
-      margin-bottom: 4mm;
-    }
-
-    /* ── 2×3 grid fills remaining space ── */
+    /* ── 2×3 card grid ── */
     .grid {
       flex: 1;
       display: grid;
       grid-template-columns: 1fr 1fr;
       grid-template-rows: repeat(3, 1fr);
-      gap: 4.5mm;
+      gap: 5mm;
       min-height: 0;
     }
 
-    /* ── Card ── */
+    /* ── Card: cream background, diagonal-clipped image ── */
     .card {
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      border: 0.25mm solid #ddd;
-    }
-
-    .card-img-wrap {
-      flex: 0 0 68%;
       position: relative;
+      background: #f2ede8;
       overflow: hidden;
-      background: #f0eeea;
     }
-    .card-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-    .card-no-img { width: 100%; height: 100%; background: #ece8e3; }
 
-    /* Sold diagonal band */
-    .sold-wrap { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+    /* Full-bleed image clipped diagonally — left cuts higher, right cuts lower */
+    .card-img {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      clip-path: polygon(0 0, 100% 0, 100% 72%, 0 54%);
+    }
+
+    /* Sold diagonal band — top-right corner */
+    .sold-wrap {
+      position: absolute;
+      top: 0; right: 0;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      pointer-events: none;
+    }
     .sold-band {
       position: absolute;
       background: #CC2229;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 220%;
-      height: 6.5mm;
-      top: 3%;
-      left: -30%;
-      transform: rotate(45deg);
+      width: 55%;
+      height: 8mm;
+      top: 8%;
+      right: -14%;
+      transform: rotate(35deg);
     }
     .sold-text {
       font-family: 'Source Serif 4', Georgia, serif;
       font-style: italic;
       font-weight: 400;
-      font-size: 8pt;
+      font-size: 9pt;
       color: #fff;
       letter-spacing: 0.06em;
     }
 
-    /* Month pill */
-    .month-pill {
+    /* Content sits on the cream bg at the bottom of the card */
+    .card-content {
       position: absolute;
-      bottom: 2mm;
-      left: 2mm;
-      background: rgba(0,0,0,0.55);
-      color: #fff;
-      font-size: 6pt;
-      font-weight: 600;
-      padding: 0.75mm 2mm;
-      border-radius: 0;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-
-    /* Card body */
-    .card-body {
-      flex: 1;
-      padding: 2.5mm 3mm 2mm;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 0.75mm;
-      border-top: 0.25mm solid #ddd;
+      bottom: 0; left: 0;
+      width: 55%;
+      padding: 0 4mm 3.5mm;
     }
     .card-street {
-      font-size: 7.5pt;
+      font-size: 8pt;
       font-weight: 700;
       color: #252525;
-      line-height: 1.25;
+      line-height: 1.3;
+      margin-bottom: 1mm;
     }
     .card-suburb {
       font-family: 'Source Serif 4', Georgia, serif;
       font-style: italic;
-      font-size: 7pt;
+      font-size: 8pt;
       color: #CC2229;
       line-height: 1.2;
+      margin-bottom: 1.5mm;
     }
     .card-feats {
-      font-size: 6.5pt;
+      font-size: 7pt;
       font-weight: 500;
-      color: #666;
+      color: #444;
       display: flex;
       align-items: center;
-      gap: 0;
     }
-    .sep { color: #CC2229; margin: 0 1mm; font-weight: 300; }
+    .feat-sep { color: #CC2229; margin: 0 1.5mm; font-weight: 300; }
 
-    /* ── Footer ── */
+    /* ── Footer tagline ── */
     .footer {
       flex-shrink: 0;
-      padding-top: 3mm;
-      margin-top: 4mm;
-      border-top: 0.25mm solid #ddd;
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-    }
-    .footer-name {
-      font-size: 7.5pt;
+      margin-top: 5mm;
+      text-align: right;
+      font-size: 9pt;
       font-weight: 700;
       color: #252525;
+      line-height: 1.4;
     }
-    .footer-right {
-      font-size: 6.5pt;
-      color: #999;
+    .footer em {
+      color: #CC2229;
+      font-style: normal;
     }
 
     /* Screen preview */
@@ -259,20 +236,19 @@ function generateHtml(sales: Sale[]): string {
 </head>
 <body>
 
-  <div class="heading">
-    <span class="heading-our">Our</span>
-    <span class="heading-italic">Recent Sales</span>
-  </div>
+  <div class="pill"><span class="pill-text">Sold Nearby</span></div>
 
-  <div class="red-rule"></div>
+  <div class="heading">
+    <span class="heading-line">Recent</span>
+    <span class="heading-line">Sales</span>
+  </div>
 
   <div class="grid">
     ${cards}
   </div>
 
   <div class="footer">
-    <span class="footer-name">Ed Scanlan &nbsp;·&nbsp; 021 814 578 &nbsp;·&nbsp; ed.scanlan@professionals.co.nz</span>
-    <span class="footer-right">Meros Group Realty Ltd Licensed REAA 2008 &nbsp;·&nbsp; edscanlan.co.nz</span>
+    when results matter, trust someone who <em>delivers them.</em>
   </div>
 
 </body>
