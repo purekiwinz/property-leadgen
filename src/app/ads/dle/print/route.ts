@@ -102,8 +102,9 @@ function renderSaleTile(sale: Sale | null): string {
   </div>`;
 }
 
-function renderFront(suburb: Suburb): string {
+function renderFront(suburb: Suburb, idx: number): string {
   const qr = QR_MAP[suburb];
+  const qrId = `${qr.id}-${idx}`;
   return `<div class="dle dle-front">
     <div class="col-agent">
       <img class="agent-img" src="https://edscanlan.co.nz/agent_transparent.webp" alt="Ed Scanlan">
@@ -124,7 +125,7 @@ function renderFront(suburb: Suburb): string {
       </div>
     </div>
     <div class="col-qr">
-      <div class="qr-wrap"><div id="${qr.id}"></div></div>
+      <div class="qr-wrap"><div id="${qrId}"></div></div>
       <span class="qr-cta">Scan to find your<br>home&rsquo;s value</span>
       <div class="contact-block">
         <span class="contact-name">Ed Scanlan</span>
@@ -165,19 +166,19 @@ function generateHtml(sales: Sale[]): string {
 
   // 2 A4 pages per suburb: 3× front then 3× back
   const pages = SUBURBS.flatMap((suburb, i) => {
-    const front = renderFront(suburb);
-    const back  = renderBack(suburb, getSalesForSuburb(sorted, suburb));
+    const fronts = [0, 1, 2].map(idx => renderFront(suburb, idx));
+    const back   = renderBack(suburb, getSalesForSuburb(sorted, suburb));
     return [
-      a4Page([front, front, front], i === 0),
-      a4Page([back,  back,  back],  false),
+      a4Page(fronts, i === 0),
+      a4Page([back, back, back], false),
     ];
   });
 
   const pagesHtml = pages.join('\n');
 
-  const qrScript = SUBURBS.map(s => {
+  const qrScript = SUBURBS.flatMap(s => {
     const qr = QR_MAP[s];
-    return `makeQR('${qr.id}', '${qr.url}');`;
+    return [0, 1, 2].map(idx => `makeQR('${qr.id}-${idx}', '${qr.url}');`);
   }).join('\n  ');
 
   return `<!DOCTYPE html>
