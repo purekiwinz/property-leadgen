@@ -31,9 +31,9 @@ function esc(s: string) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-const BED_ICON  = `<svg style="width:3.2mm;height:3.2mm;vertical-align:middle;margin-right:0.8mm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 17V9.5A1.5 1.5 0 013.5 8h17A1.5 1.5 0 0122 9.5V17"/><path d="M2 13h20"/><path d="M6 13V10a1 1 0 011-1h4a1 1 0 011 1v3"/><line x1="4" y1="17" x2="4" y2="19"/><line x1="20" y1="17" x2="20" y2="19"/></svg>`;
-const BATH_ICON = `<svg style="width:3.2mm;height:3.2mm;vertical-align:middle;margin-right:0.8mm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="5" r="1" fill="currentColor" stroke="none"/><path d="M8 6v3"/><path d="M6 9h4"/><path d="M2 16h20v1a2 2 0 01-2 2H4a2 2 0 01-2-2v-1z"/><line x1="5" y1="19" x2="5" y2="21"/><line x1="19" y1="19" x2="19" y2="21"/></svg>`;
-const CAR_ICON  = `<svg style="width:3.2mm;height:3.2mm;vertical-align:middle;margin-right:0.8mm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l1.8-5.4A2 2 0 018.7 6h6.6a2 2 0 011.9 1.6L19 13"/><rect x="2" y="13" width="20" height="5" rx="1"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>`;
+const BED_ICON  = `<svg style="width:2.8mm;height:2.8mm;vertical-align:middle;margin-right:0.7mm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 17V9.5A1.5 1.5 0 013.5 8h17A1.5 1.5 0 0122 9.5V17"/><path d="M2 13h20"/><path d="M6 13V10a1 1 0 011-1h4a1 1 0 011 1v3"/><line x1="4" y1="17" x2="4" y2="19"/><line x1="20" y1="17" x2="20" y2="19"/></svg>`;
+const BATH_ICON = `<svg style="width:2.8mm;height:2.8mm;vertical-align:middle;margin-right:0.7mm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="5" r="1" fill="currentColor" stroke="none"/><path d="M8 6v3"/><path d="M6 9h4"/><path d="M2 16h20v1a2 2 0 01-2 2H4a2 2 0 01-2-2v-1z"/><line x1="5" y1="19" x2="5" y2="21"/><line x1="19" y1="19" x2="19" y2="21"/></svg>`;
+const CAR_ICON  = `<svg style="width:2.8mm;height:2.8mm;vertical-align:middle;margin-right:0.7mm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l1.8-5.4A2 2 0 018.7 6h6.6a2 2 0 011.9 1.6L19 13"/><rect x="2" y="13" width="20" height="5" rx="1"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>`;
 
 function renderCard(sale: Sale): string {
   const lastComma = sale.address.lastIndexOf(',');
@@ -67,7 +67,7 @@ function generateHtml(sales: Sale[]): string {
   <title>Recent Sales — Ed Scanlan</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Source+Serif+4:ital,opsz,wght@0,8,400;1,8,400;1,8,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Source+Serif+4:ital,opsz,wght@0,8..12,400;0,8..12,700;1,8..12,400;1,8..12,700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -85,18 +85,18 @@ function generateHtml(sales: Sale[]): string {
       color: #252525;
       display: flex;
       flex-direction: column;
-      padding: 12mm 12mm 10mm;
+      padding: 14mm 14mm 12mm;
       print-color-adjust: exact;
       -webkit-print-color-adjust: exact;
     }
 
-    /* ── Pill tag — matches "Meet The Team" style from INTRO p.3 ── */
+    /* ── Pill — matches "Meet The Team" pill on INTRO p.3 ── */
     .pill {
       display: inline-flex;
       align-items: center;
       background: #CC2229;
-      padding: 1.5mm 5mm;
-      margin-bottom: 4mm;
+      padding: 1.8mm 6mm;
+      margin-bottom: 5mm;
       flex-shrink: 0;
       align-self: flex-start;
     }
@@ -104,22 +104,31 @@ function generateHtml(sales: Sale[]): string {
       font-family: 'Source Serif 4', Georgia, serif;
       font-style: italic;
       font-weight: 400;
-      font-size: 11pt;
+      font-size: 10.5pt;
       color: #fff;
-      letter-spacing: 0.02em;
+      letter-spacing: 0.01em;
     }
 
-    /* ── Main heading — large, bold, two lines, no italic ── */
+    /* ── Heading — matches INTRO pattern: Poppins bold dark + Source Serif italic red ── */
     .heading {
       flex-shrink: 0;
-      margin-bottom: 6mm;
+      margin-bottom: 7mm;
+      line-height: 0.95;
     }
-    .heading-line {
-      font-size: 52pt;
+    .heading-sans {
+      font-family: 'Poppins', sans-serif;
+      font-size: 54pt;
       font-weight: 800;
       color: #252525;
-      line-height: 1.0;
       letter-spacing: -0.02em;
+      display: block;
+    }
+    .heading-serif {
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-style: italic;
+      font-size: 54pt;
+      font-weight: 400;
+      color: #CC2229;
       display: block;
     }
 
@@ -129,27 +138,27 @@ function generateHtml(sales: Sale[]): string {
       display: grid;
       grid-template-columns: 1fr 1fr;
       grid-template-rows: repeat(3, 1fr);
-      gap: 5mm;
+      gap: 4mm;
       min-height: 0;
     }
 
-    /* ── Card: cream background, diagonal-clipped image ── */
+    /* ── Card ── */
     .card {
       position: relative;
       background: #f2ede8;
       overflow: hidden;
     }
 
-    /* Full-bleed image clipped diagonally — left cuts higher, right cuts lower */
+    /* Image clipped diagonally: left edge cuts at 57%, right at 74% */
     .card-img {
       position: absolute;
       top: 0; left: 0;
       width: 100%; height: 100%;
       object-fit: cover;
-      clip-path: polygon(0 0, 100% 0, 100% 72%, 0 54%);
+      clip-path: polygon(0 0, 100% 0, 100% 74%, 0 57%);
     }
 
-    /* Sold diagonal band — top-right corner */
+    /* "Sold" ribbon — top-right corner, rotated into position */
     .sold-wrap {
       position: absolute;
       top: 0; right: 0;
@@ -163,30 +172,31 @@ function generateHtml(sales: Sale[]): string {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 55%;
-      height: 8mm;
-      top: 8%;
-      right: -14%;
+      width: 52%;
+      height: 7.5mm;
+      top: 7%;
+      right: -13%;
       transform: rotate(35deg);
     }
     .sold-text {
       font-family: 'Source Serif 4', Georgia, serif;
       font-style: italic;
       font-weight: 400;
-      font-size: 9pt;
+      font-size: 8.5pt;
       color: #fff;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.08em;
     }
 
-    /* Content sits on the cream bg at the bottom of the card */
+    /* Text content sits in the cream area at bottom-left */
     .card-content {
       position: absolute;
       bottom: 0; left: 0;
-      width: 55%;
-      padding: 0 4mm 3.5mm;
+      width: 68%;
+      padding: 0 4mm 4mm;
     }
     .card-street {
-      font-size: 8pt;
+      font-family: 'Poppins', sans-serif;
+      font-size: 7.5pt;
       font-weight: 700;
       color: #252525;
       line-height: 1.3;
@@ -195,36 +205,40 @@ function generateHtml(sales: Sale[]): string {
     .card-suburb {
       font-family: 'Source Serif 4', Georgia, serif;
       font-style: italic;
-      font-size: 8pt;
+      font-size: 7.5pt;
       color: #CC2229;
       line-height: 1.2;
       margin-bottom: 1.5mm;
     }
     .card-feats {
-      font-size: 7pt;
+      font-family: 'Poppins', sans-serif;
+      font-size: 6.5pt;
       font-weight: 500;
-      color: #444;
+      color: #555;
       display: flex;
       align-items: center;
     }
-    .feat-sep { color: #CC2229; margin: 0 1.5mm; font-weight: 300; }
+    .feat-sep { color: #CC2229; margin: 0 1.2mm; font-weight: 300; }
 
-    /* ── Footer tagline ── */
+    /* ── Footer tagline — right-aligned, matches INTRO tone ── */
     .footer {
       flex-shrink: 0;
-      margin-top: 5mm;
+      margin-top: 6mm;
       text-align: right;
-      font-size: 9pt;
-      font-weight: 700;
+      font-family: 'Poppins', sans-serif;
+      font-size: 8.5pt;
+      font-weight: 600;
       color: #252525;
+      letter-spacing: 0.01em;
       line-height: 1.4;
     }
-    .footer em {
+    .footer-italic {
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-style: italic;
+      font-weight: 400;
       color: #CC2229;
-      font-style: normal;
     }
 
-    /* Screen preview */
     @media screen {
       html { background: #888; min-height: 100vh; }
       body { margin: 20px auto; box-shadow: 0 4px 40px rgba(0,0,0,0.4); }
@@ -239,8 +253,8 @@ function generateHtml(sales: Sale[]): string {
   <div class="pill"><span class="pill-text">Sold Nearby</span></div>
 
   <div class="heading">
-    <span class="heading-line">Recent</span>
-    <span class="heading-line">Sales</span>
+    <span class="heading-sans">Recent</span>
+    <span class="heading-serif">Sales.</span>
   </div>
 
   <div class="grid">
@@ -248,7 +262,7 @@ function generateHtml(sales: Sale[]): string {
   </div>
 
   <div class="footer">
-    when results matter, trust someone who <em>delivers them.</em>
+    when results matter, trust someone who <span class="footer-italic">delivers them.</span>
   </div>
 
 </body>
