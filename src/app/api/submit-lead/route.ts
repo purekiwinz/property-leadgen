@@ -64,6 +64,7 @@ async function pushToHubSpot(data: {
         address: data.address,
         hs_lead_status: "NEW",
         lifecyclestage: "lead",
+        ...(data.optInMarketing && { hs_email_optout: false }),
       },
     }),
   });
@@ -77,7 +78,12 @@ async function pushToHubSpot(data: {
           method: "PATCH",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
           body: JSON.stringify({
-            properties: { phone: data.phone, hs_lead_status: "NEW", lifecyclestage: "lead" },
+            properties: {
+              phone: data.phone,
+              hs_lead_status: "NEW",
+              lifecyclestage: "lead",
+              ...(data.optInMarketing && { hs_email_optout: false }),
+            },
           }),
         });
         await Promise.all([
