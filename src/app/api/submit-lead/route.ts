@@ -62,6 +62,22 @@ async function sendMetaCAPIEvents(data: {
   }
 }
 
+async function addToMetaSyncList(token: string, contactId: string) {
+  const listId = process.env.HUBSPOT_META_SYNC_LIST_ID;
+  if (!listId) return;
+
+  const res = await fetch(`https://api.hubapi.com/crm/v3/lists/${listId}/memberships/add`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ recordIds: [contactId] }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    console.error("HubSpot list membership error:", err);
+  }
+}
+
 async function createHubSpotNote(token: string, contactId: string, suburb: string, medium: string) {
   const channel = medium === 'print' ? 'mailbox drop' : 'Meta';
   await fetch("https://api.hubapi.com/crm/v3/objects/notes", {
@@ -123,6 +139,8 @@ async function pushToHubSpot(data: {
         address: data.address,
         hs_lead_status: "NEW",
         lifecyclestage: "lead",
+        hubspot_owner_id: "91412149",
+        hs_content_membership_notes: "seller",
         ...(data.optInMarketing && { hs_email_optout: false }),
       },
     }),
@@ -141,6 +159,8 @@ async function pushToHubSpot(data: {
               phone: data.phone,
               hs_lead_status: "NEW",
               lifecyclestage: "lead",
+              hubspot_owner_id: "91412149",
+              hs_content_membership_notes: "seller",
               ...(data.optInMarketing && { hs_email_optout: false }),
             },
           }),
@@ -165,6 +185,7 @@ async function pushToHubSpot(data: {
             }),
           }),
           data.suburb ? createHubSpotNote(token, existingId, data.suburb, data.medium) : Promise.resolve(),
+          addToMetaSyncList(token, existingId),
         ]);
       }
       return;
@@ -195,6 +216,7 @@ async function pushToHubSpot(data: {
       }),
     }),
     data.suburb ? createHubSpotNote(token, contact.id, data.suburb, data.medium) : Promise.resolve(),
+    addToMetaSyncList(token, contact.id),
   ]);
 }
 
