@@ -75,6 +75,9 @@ export default function LeadGenForm({ suburb = '', medium = '' }: { suburb?: str
   const handleAddressNext = (address?: string) => {
     const val = address ?? formData.address;
     if (!val) return;
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('track', 'Search', { search_string: val, content_category: 'property_address' });
+    }
     if (isHibiscusCoast(val)) {
       setShowAreaWarning(false);
       if (typeof window !== 'undefined' && (window as any).fbq) {
@@ -95,6 +98,14 @@ export default function LeadGenForm({ suburb = '', medium = '' }: { suburb?: str
     setIsSubmitting(true);
     setSubmitError("");
 
+    const eventId = typeof crypto !== 'undefined' && 'randomUUID' in crypto
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('track', 'SubmitApplication', { content_name: suburb || 'unknown', content_category: 'appraisal_form', eventID: eventId });
+    }
+
     try {
       const res = await fetch("/api/submit-lead", {
         method: "POST",
@@ -110,6 +121,7 @@ export default function LeadGenForm({ suburb = '', medium = '' }: { suburb?: str
           optInMarketing: formData.optInMarketing,
           suburb,
           medium,
+          eventId,
         }),
       });
 
@@ -119,7 +131,10 @@ export default function LeadGenForm({ suburb = '', medium = '' }: { suburb?: str
       }
 
       if (typeof window !== 'undefined' && (window as any).fbq) {
-        (window as any).fbq('track', 'Lead', suburb ? { content_name: suburb, content_category: 'suburb' } : {});
+        (window as any).fbq('track', 'Lead', suburb
+          ? { content_name: suburb, content_category: 'suburb', eventID: eventId }
+          : { eventID: eventId });
+        (window as any).fbq('track', 'CompleteRegistration', { content_name: suburb || 'unknown', content_category: 'appraisal_form', eventID: `${eventId}-cr` });
       }
 
       if (typeof window !== 'undefined' && (window as any).gtag) {
@@ -258,6 +273,7 @@ export default function LeadGenForm({ suburb = '', medium = '' }: { suburb?: str
                     onClick={() => {
                       updateForm("timeline", time);
                       if (typeof window !== 'undefined' && (window as any).fbq) {
+                        (window as any).fbq('track', 'Schedule', { content_name: time, content_category: 'appraisal_timeline', suburb: suburb || 'unknown' });
                         (window as any).fbq('trackCustom', 'FormStep', { step_name: 'selling_timeline', value: time, suburb: suburb || 'unknown' });
                       }
                       nextStep();

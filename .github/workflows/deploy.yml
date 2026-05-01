@@ -53,10 +53,11 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: root
           key: ${{ secrets.VPS_SSH_KEY }}
-          envs: HUBSPOT_ACCESS_TOKEN,SUPABASE_SERVICE_ROLE_KEY
+          envs: HUBSPOT_ACCESS_TOKEN,SUPABASE_SERVICE_ROLE_KEY,NEXT_META_ACCESS_TOKEN
           script: |
             docker pull ghcr.io/purekiwinz/property-leadgen:latest
             cd /docker/autoagent
             grep -qxF "HUBSPOT_ACCESS_TOKEN=$HUBSPOT_ACCESS_TOKEN" .env 2>/dev/null || echo "HUBSPOT_ACCESS_TOKEN=$HUBSPOT_ACCESS_TOKEN" >> .env
             grep -qxF "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY" .env 2>/dev/null || echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY" >> .env
+            grep -qxF "NEXT_META_ACCESS_TOKEN=$NEXT_META_ACCESS_TOKEN" .env 2>/dev/null || echo "NEXT_META_ACCESS_TOKEN=$NEXT_META_ACCESS_TOKEN" >> .env
             docker-compose up -d leadgen

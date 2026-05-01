@@ -1,7 +1,66 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
+
+function hashData(value: string): string {
+  return crypto.createHash("sha256").update(value.toLowerCase().trim()).digest("hex");
+}
+
+async function sendMetaCAPIEvents(data: {
+  email: string;
+  phone: string;
+  firstName: string;
+  lastName: string;
+  suburb: string;
+  eventId: string;
+}) {
+  const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+  const accessToken = process.env.NEXT_META_ACCESS_TOKEN;
+  if (!pixelId || !accessToken) return;
+
+  const eventTime = Math.floor(Date.now() / 1000);
+  const userData = {
+    em: [hashData(data.email)],
+    ph: [hashData(data.phone.replace(/\D/g, ""))],
+    fn: [hashData(data.firstName)],
+    ln: [hashData(data.lastName)],
+  };
+
+  const events = [
+    {
+      event_name: "Lead",
+      event_time: eventTime,
+      action_source: "website",
+      event_id: data.eventId,
+      user_data: userData,
+      custom_data: data.suburb ? { content_name: data.suburb, content_category: "suburb" } : {},
+    },
+    {
+      event_name: "CompleteRegistration",
+      event_time: eventTime,
+      action_source: "website",
+      event_id: `${data.eventId}-cr`,
+      user_data: userData,
+      custom_data: { content_name: data.suburb || "unknown", content_category: "appraisal_form" },
+    },
+  ];
+
+  const res = await fetch(
+    `https://graph.facebook.com/v18.0/${pixelId}/events?access_token=${accessToken}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ data: events }),
+    }
+  );
+
+  if (!res.ok) {
+    const err = await res.json();
+    console.error("Meta CAPI error:", err);
+  }
+}
 
 async function createHubSpotNote(token: string, contactId: string, suburb: string, medium: string) {
   const channel = medium === 'print' ? 'mailbox drop' : 'Meta';
@@ -146,7 +205,7 @@ export async function POST(req: NextRequest) {
   );
 
   const body = await req.json();
-  const { address, timeline, buyingNext, firstName, lastName, email, phone, optInMarketing, suburb, medium } = body;
+  const { address, timeline, buyingNext, firstName, lastName, email, phone, optInMarketing, suburb, medium, eventId } = body;
 
   const { error } = await supabase.from("appraisal_leads").insert([{
     address, timeline, buying_next: buyingNext,
@@ -160,9 +219,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  await pushToHubSpot({ firstName, lastName, email, phone, address, timeline, buyingNext, optInMarketing: !!optInMarketing, suburb: suburb || '', medium: medium || '' }).catch(
-    (e) => console.error("HubSpot push failed:", e)
-  );
+  await Promise.all([
+    pushToHubSpot({ firstName, lastName, email, phone, address, timeline, buyingNext, optInMarketing: !!optInMarketing, suburb: suburb || '', medium: medium || '' }).catch(
+      (e) => console.error("HubSpot push failed:", e)
+    ),
+    eventId
+      ? sendMetaCAPIEvents({ email, phone, firstName, lastName, suburb: suburb || '', eventId }).catch(
+          (e) => console.error("Meta CAPI failed:", e)
+        )
+      : Promise.resolve(),
+  ]);
 
   return NextResponse.json({ ok: true });
 }
