@@ -403,7 +403,7 @@ export default function LeadGenForm({ suburb = '', medium = '' }: { suburb?: str
                   </p>
                 </div>
 
-                <label className="flex items-start gap-3 cursor-pointer group">
+                <label className="flex items-start gap-3 cursor-pointer group p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-white/10 hover:border-[#FF4753]/40 transition-colors">
                   <input
                     type="checkbox"
                     checked={formData.optInMarketing}
@@ -413,10 +413,10 @@ export default function LeadGenForm({ suburb = '', medium = '' }: { suburb?: str
                         (window as any).fbq('track', 'Subscribe', { content_name: "Ed's Quarterly Market Update", content_category: 'newsletter' });
                       }
                     }}
-                    className="mt-0.5 w-4 h-4 shrink-0 accent-[#FF4753] cursor-pointer"
+                    className="mt-1 w-5 h-5 shrink-0 accent-[#FF4753] cursor-pointer"
                   />
-                  <span className="text-xs text-white/60 leading-snug group-hover:text-white/80 transition-colors">
-                    Yes — send me Ed&apos;s <span className="text-white font-semibold">Quarterly Market Update</span> and keep me informed about the Hibiscus Coast market. You can unsubscribe any time.
+                  <span className="text-sm text-white/70 leading-snug group-hover:text-white/90 transition-colors">
+                    Yes — send me Ed&apos;s <span className="text-white font-bold">Quarterly Market Update</span> and keep me informed about the Hibiscus Coast market. You can unsubscribe any time.
                   </span>
                 </label>
 
