@@ -75,6 +75,9 @@ export default function LeadGenForm({ suburb = '', medium = '' }: { suburb?: str
     if (!val) return;
     if (isHibiscusCoast(val)) {
       setShowAreaWarning(false);
+      if (typeof window !== 'undefined' && (window as any).fbq) {
+        (window as any).fbq('track', 'Contact', { content_name: suburb || 'unknown', content_category: 'appraisal_form' });
+      }
       nextStep();
     } else {
       setShowAreaWarning(true);
