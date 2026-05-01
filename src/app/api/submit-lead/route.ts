@@ -62,6 +62,28 @@ async function sendMetaCAPIEvents(data: {
   }
 }
 
+const MARKETING_SUBSCRIPTION_ID = "2561242563";
+
+async function setMarketingSubscription(token: string, email: string, optIn: boolean) {
+  const endpoint = optIn ? "subscribe" : "unsubscribe";
+  const body: Record<string, string> = { emailAddress: email, subscriptionId: MARKETING_SUBSCRIPTION_ID };
+  if (optIn) {
+    body.legalBasis = "CONSENT_WITH_NOTICE";
+    body.legalBasisExplanation = "Contact explicitly opted in via property appraisal form";
+  }
+
+  const res = await fetch(`https://api.hubapi.com/communication-preferences/v3/${endpoint}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    console.error(`HubSpot subscription ${endpoint} error:`, err);
+  }
+}
+
 async function addToMetaSyncList(token: string, contactId: string) {
   const listId = process.env.HUBSPOT_META_SYNC_LIST_ID;
   if (!listId) return;
@@ -184,6 +206,7 @@ async function pushToHubSpot(data: {
           }),
           data.suburb ? createHubSpotNote(token, existingId, data.suburb, data.medium) : Promise.resolve(),
           addToMetaSyncList(token, existingId),
+          setMarketingSubscription(token, data.email, data.optInMarketing),
         ]);
       }
       return;
@@ -215,6 +238,7 @@ async function pushToHubSpot(data: {
     }),
     data.suburb ? createHubSpotNote(token, contact.id, data.suburb, data.medium) : Promise.resolve(),
     addToMetaSyncList(token, contact.id),
+    setMarketingSubscription(token, data.email, data.optInMarketing),
   ]);
 }
 
