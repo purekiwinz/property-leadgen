@@ -141,7 +141,6 @@ async function pushToHubSpot(data: {
         lifecyclestage: "lead",
         hubspot_owner_id: "91412149",
         sales_contact_type: "SELLER",
-        ...(data.optInMarketing && { hs_email_optout: false }),
       },
     }),
   });
@@ -161,7 +160,6 @@ async function pushToHubSpot(data: {
               lifecyclestage: "lead",
               hubspot_owner_id: "91412149",
               sales_contact_type: "SELLER",
-              ...(data.optInMarketing && { hs_email_optout: false }),
             },
           }),
         });
