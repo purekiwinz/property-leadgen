@@ -241,8 +241,8 @@ function generateHtml(sales: Sale[]): string {
     }
 
     @media screen {
-      html { background: #888; min-height: 100vh; overflow: auto; }
-      body { margin: 20px auto; box-shadow: 0 4px 40px rgba(0,0,0,0.4); height: auto; overflow: visible; }
+      html { background: #888; min-height: 100vh; overflow-y: auto; }
+      body { margin: 20px auto; box-shadow: 0 4px 40px rgba(0,0,0,0.4); }
     }
     @media print {
       html, body { margin: 0; box-shadow: none; }
