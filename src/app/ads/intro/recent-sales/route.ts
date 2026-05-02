@@ -57,7 +57,7 @@ function renderCard(sale: Sale): string {
 }
 
 function generateHtml(sales: Sale[]): string {
-  const sorted = sortSales(sales.filter(s => s.image)).slice(0, 6);
+  const sorted = sortSales(sales.filter(s => s.image)).slice(0, 4);
   const cards  = sorted.map(s => renderCard(s)).join('');
 
   return `<!DOCTYPE html>
@@ -137,7 +137,7 @@ function generateHtml(sales: Sale[]): string {
       flex: 1;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      grid-template-rows: repeat(3, 1fr);
+      grid-template-rows: repeat(2, 1fr);
       gap: 4mm;
       min-height: 0;
     }
