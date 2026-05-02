@@ -31,9 +31,9 @@ function esc(s: string) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-const BED_ICON  = `<svg style="width:4.2mm;height:4.2mm;vertical-align:middle;margin-right:0.7mm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 17V9.5A1.5 1.5 0 013.5 8h17A1.5 1.5 0 0122 9.5V17"/><path d="M2 13h20"/><path d="M6 13V10a1 1 0 011-1h4a1 1 0 011 1v3"/><line x1="4" y1="17" x2="4" y2="19"/><line x1="20" y1="17" x2="20" y2="19"/></svg>`;
-const BATH_ICON = `<svg style="width:4.2mm;height:4.2mm;vertical-align:middle;margin-right:0.7mm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="5" r="1" fill="currentColor" stroke="none"/><path d="M8 6v3"/><path d="M6 9h4"/><path d="M2 16h20v1a2 2 0 01-2 2H4a2 2 0 01-2-2v-1z"/><line x1="5" y1="19" x2="5" y2="21"/><line x1="19" y1="19" x2="19" y2="21"/></svg>`;
-const CAR_ICON  = `<svg style="width:4.2mm;height:4.2mm;vertical-align:middle;margin-right:0.7mm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l1.8-5.4A2 2 0 018.7 6h6.6a2 2 0 011.9 1.6L19 13"/><rect x="2" y="13" width="20" height="5" rx="1"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>`;
+const BED_ICON  = `<svg style="width:3.5mm;height:3.5mm;vertical-align:middle;margin-right:0.6mm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 17V9.5A1.5 1.5 0 013.5 8h17A1.5 1.5 0 0122 9.5V17"/><path d="M2 13h20"/><path d="M6 13V10a1 1 0 011-1h4a1 1 0 011 1v3"/><line x1="4" y1="17" x2="4" y2="19"/><line x1="20" y1="17" x2="20" y2="19"/></svg>`;
+const BATH_ICON = `<svg style="width:3.5mm;height:3.5mm;vertical-align:middle;margin-right:0.6mm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="5" r="1" fill="currentColor" stroke="none"/><path d="M8 6v3"/><path d="M6 9h4"/><path d="M2 16h20v1a2 2 0 01-2 2H4a2 2 0 01-2-2v-1z"/><line x1="5" y1="19" x2="5" y2="21"/><line x1="19" y1="19" x2="19" y2="21"/></svg>`;
+const CAR_ICON  = `<svg style="width:3.5mm;height:3.5mm;vertical-align:middle;margin-right:0.6mm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l1.8-5.4A2 2 0 018.7 6h6.6a2 2 0 011.9 1.6L19 13"/><rect x="2" y="13" width="20" height="5" rx="1"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>`;
 
 function renderCard(sale: Sale): string {
   const lastComma = sale.address.lastIndexOf(',');
@@ -57,7 +57,7 @@ function renderCard(sale: Sale): string {
 }
 
 function generateHtml(sales: Sale[]): string {
-  const sorted = sortSales(sales.filter(s => s.image)).slice(0, 4);
+  const sorted = sortSales(sales.filter(s => s.image)).slice(0, 6);
   const cards  = sorted.map(s => renderCard(s)).join('');
 
   return `<!DOCTYPE html>
@@ -85,7 +85,7 @@ function generateHtml(sales: Sale[]): string {
       color: #252525;
       display: flex;
       flex-direction: column;
-      padding: 14mm 14mm 12mm;
+      padding: 11mm 14mm 9mm;
       print-color-adjust: exact;
       -webkit-print-color-adjust: exact;
     }
@@ -96,7 +96,7 @@ function generateHtml(sales: Sale[]): string {
       align-items: center;
       background: #CC2229;
       padding: 1.8mm 6mm;
-      margin-bottom: 5mm;
+      margin-bottom: 3mm;
       flex-shrink: 0;
       align-self: flex-start;
     }
@@ -112,12 +112,12 @@ function generateHtml(sales: Sale[]): string {
     /* ── Heading — matches INTRO pattern: Poppins bold dark + Source Serif italic red ── */
     .heading {
       flex-shrink: 0;
-      margin-bottom: 7mm;
+      margin-bottom: 4mm;
       line-height: 0.95;
     }
     .heading-sans {
       font-family: 'Poppins', sans-serif;
-      font-size: 64pt;
+      font-size: 44pt;
       font-weight: 800;
       color: #252525;
       letter-spacing: -0.02em;
@@ -126,7 +126,7 @@ function generateHtml(sales: Sale[]): string {
     .heading-serif {
       font-family: 'Source Serif 4', Georgia, serif;
       font-style: italic;
-      font-size: 64pt;
+      font-size: 44pt;
       font-weight: 400;
       color: #CC2229;
       display: block;
@@ -137,8 +137,8 @@ function generateHtml(sales: Sale[]): string {
       flex: 1;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      grid-template-rows: repeat(2, 1fr);
-      gap: 4mm;
+      grid-template-rows: repeat(3, 1fr);
+      gap: 3mm;
       min-height: 0;
     }
 
@@ -174,7 +174,7 @@ function generateHtml(sales: Sale[]): string {
       align-items: center;
       justify-content: center;
       width: 58%;
-      height: 11mm;
+      height: 8mm;
       top: 7%;
       right: -13%;
       transform: rotate(35deg);
@@ -183,7 +183,7 @@ function generateHtml(sales: Sale[]): string {
       font-family: 'Source Serif 4', Georgia, serif;
       font-style: italic;
       font-weight: 400;
-      font-size: 14pt;
+      font-size: 11pt;
       color: #fff;
       letter-spacing: 0.08em;
     }
@@ -193,27 +193,27 @@ function generateHtml(sales: Sale[]): string {
       position: absolute;
       bottom: 0; left: 0;
       width: 68%;
-      padding: 0 4mm 4mm;
+      padding: 0 3mm 3mm;
     }
     .card-street {
       font-family: 'Poppins', sans-serif;
-      font-size: 11.5pt;
+      font-size: 9pt;
       font-weight: 700;
       color: #252525;
-      line-height: 1.3;
-      margin-bottom: 1mm;
+      line-height: 1.25;
+      margin-bottom: 0.8mm;
     }
     .card-suburb {
       font-family: 'Source Serif 4', Georgia, serif;
       font-style: italic;
-      font-size: 11.5pt;
+      font-size: 9pt;
       color: #CC2229;
       line-height: 1.2;
-      margin-bottom: 1.5mm;
+      margin-bottom: 1mm;
     }
     .card-feats {
       font-family: 'Poppins', sans-serif;
-      font-size: 9.5pt;
+      font-size: 8pt;
       font-weight: 500;
       color: #555;
       display: flex;
@@ -224,7 +224,7 @@ function generateHtml(sales: Sale[]): string {
     /* ── Footer tagline — right-aligned, matches INTRO tone ── */
     .footer {
       flex-shrink: 0;
-      margin-top: 6mm;
+      margin-top: 4mm;
       text-align: right;
       font-family: 'Poppins', sans-serif;
       font-size: 8.5pt;
