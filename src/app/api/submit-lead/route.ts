@@ -88,7 +88,12 @@ async function setMarketingSubscription(token: string, email: string, contactId:
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
           body: JSON.stringify([contactId]),
         }).then(async (res) => {
-          if (!res.ok) console.error(`HubSpot subscribed list ${optIn ? "add" : "remove"} error:`, await res.json());
+          const data = await res.json();
+          if (!res.ok) {
+            console.error(`HubSpot subscribed list ${optIn ? "add" : "remove"} error:`, data);
+          } else {
+            console.log(`HubSpot subscribed list ${optIn ? "add" : "remove"} response:`, JSON.stringify(data));
+          }
         })
       : Promise.resolve(),
   ]);
@@ -96,17 +101,21 @@ async function setMarketingSubscription(token: string, email: string, contactId:
 
 async function addToMetaSyncList(token: string, contactId: string) {
   const listId = process.env.HUBSPOT_META_SYNC_LIST_ID;
-  if (!listId) return;
+  if (!listId) { console.error("addToMetaSyncList: HUBSPOT_META_SYNC_LIST_ID not set"); return; }
 
+  const body = JSON.stringify([contactId]);
+  console.log(`addToMetaSyncList: listId=${listId} contactId=${contactId} body=${body}`);
   const res = await fetch(`https://api.hubapi.com/crm/v3/lists/${listId}/memberships/add`, {
     method: "PUT",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-    body: JSON.stringify([contactId]),
+    body,
   });
 
+  const data = await res.json();
   if (!res.ok) {
-    const err = await res.json();
-    console.error("HubSpot list membership error:", err);
+    console.error("HubSpot meta list error:", data);
+  } else {
+    console.log("HubSpot meta list response:", JSON.stringify(data));
   }
 }
 
