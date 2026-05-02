@@ -155,7 +155,8 @@ function generateHtml(sales: Sale[]): string {
       top: 0; left: 0;
       width: 100%; height: 100%;
       object-fit: cover;
-      clip-path: polygon(0 0, 100% 0, 100% 68%, 0 50%);
+      object-position: center 60%;
+      clip-path: polygon(0 0, 100% 0, 100% 74%, 0 57%);
     }
 
     /* "Sold" ribbon — top-right corner, rotated into position */
@@ -240,8 +241,8 @@ function generateHtml(sales: Sale[]): string {
     }
 
     @media screen {
-      html { background: #888; min-height: 100vh; }
-      body { margin: 20px auto; box-shadow: 0 4px 40px rgba(0,0,0,0.4); }
+      html { background: #888; min-height: 100vh; overflow: auto; }
+      body { margin: 20px auto; box-shadow: 0 4px 40px rgba(0,0,0,0.4); height: auto; overflow: visible; }
     }
     @media print {
       html, body { margin: 0; box-shadow: none; }
