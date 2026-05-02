@@ -64,7 +64,7 @@ async function sendMetaCAPIEvents(data: {
 
 const MARKETING_SUBSCRIPTION_ID = "2561242563";
 
-async function setMarketingSubscription(token: string, email: string, optIn: boolean) {
+async function setMarketingSubscription(token: string, email: string, contactId: string, optIn: boolean) {
   const endpoint = optIn ? "subscribe" : "unsubscribe";
   const body: Record<string, string> = { emailAddress: email, subscriptionId: MARKETING_SUBSCRIPTION_ID };
   if (optIn) {
@@ -72,16 +72,26 @@ async function setMarketingSubscription(token: string, email: string, optIn: boo
     body.legalBasisExplanation = "Contact explicitly opted in via property appraisal form";
   }
 
-  const res = await fetch(`https://api.hubapi.com/communication-preferences/v3/${endpoint}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-    body: JSON.stringify(body),
-  });
+  const subscribedListId = process.env.HUBSPOT_SUBSCRIBED_LIST_ID;
 
-  if (!res.ok) {
-    const err = await res.json();
-    console.error(`HubSpot subscription ${endpoint} error:`, err);
-  }
+  await Promise.all([
+    fetch(`https://api.hubapi.com/communication-preferences/v3/${endpoint}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify(body),
+    }).then(async (res) => {
+      if (!res.ok) console.error(`HubSpot subscription ${endpoint} error:`, await res.json());
+    }),
+    subscribedListId
+      ? fetch(`https://api.hubapi.com/crm/v3/lists/${subscribedListId}/memberships/${optIn ? "add" : "remove"}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify([contactId]),
+        }).then(async (res) => {
+          if (!res.ok) console.error(`HubSpot subscribed list ${optIn ? "add" : "remove"} error:`, await res.json());
+        })
+      : Promise.resolve(),
+  ]);
 }
 
 async function addToMetaSyncList(token: string, contactId: string) {
@@ -206,7 +216,7 @@ async function pushToHubSpot(data: {
           }),
           data.suburb ? createHubSpotNote(token, existingId, data.suburb, data.medium) : Promise.resolve(),
           addToMetaSyncList(token, existingId),
-          setMarketingSubscription(token, data.email, data.optInMarketing),
+          setMarketingSubscription(token, data.email, existingId, data.optInMarketing),
         ]);
       }
       return;
@@ -238,7 +248,7 @@ async function pushToHubSpot(data: {
     }),
     data.suburb ? createHubSpotNote(token, contact.id, data.suburb, data.medium) : Promise.resolve(),
     addToMetaSyncList(token, contact.id),
-    setMarketingSubscription(token, data.email, data.optInMarketing),
+    setMarketingSubscription(token, data.email, contact.id, data.optInMarketing),
   ]);
 }
 
