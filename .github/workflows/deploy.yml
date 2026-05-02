@@ -49,6 +49,12 @@ jobs:
 
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v1
+        env:
+          HUBSPOT_ACCESS_TOKEN: ${{ secrets.HUBSPOT_ACCESS_TOKEN }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_META_ACCESS_TOKEN: ${{ secrets.NEXT_META_ACCESS_TOKEN }}
+          HUBSPOT_META_SYNC_LIST_ID: ${{ secrets.HUBSPOT_META_SYNC_LIST_ID }}
+          HUBSPOT_SUBSCRIBED_LIST_ID: ${{ secrets.HUBSPOT_SUBSCRIBED_LIST_ID }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: root
@@ -60,6 +66,6 @@ jobs:
             grep -qxF "HUBSPOT_ACCESS_TOKEN=$HUBSPOT_ACCESS_TOKEN" .env 2>/dev/null || echo "HUBSPOT_ACCESS_TOKEN=$HUBSPOT_ACCESS_TOKEN" >> .env
             grep -qxF "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY" .env 2>/dev/null || echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY" >> .env
             grep -qxF "NEXT_META_ACCESS_TOKEN=$NEXT_META_ACCESS_TOKEN" .env 2>/dev/null || echo "NEXT_META_ACCESS_TOKEN=$NEXT_META_ACCESS_TOKEN" >> .env
-            grep -qxF "HUBSPOT_META_SYNC_LIST_ID=$HUBSPOT_META_SYNC_LIST_ID" .env 2>/dev/null || echo "HUBSPOT_META_SYNC_LIST_ID=$HUBSPOT_META_SYNC_LIST_ID" >> .env
-            grep -qxF "HUBSPOT_SUBSCRIBED_LIST_ID=$HUBSPOT_SUBSCRIBED_LIST_ID" .env 2>/dev/null || echo "HUBSPOT_SUBSCRIBED_LIST_ID=$HUBSPOT_SUBSCRIBED_LIST_ID" >> .env
+            sed -i '/^HUBSPOT_META_SYNC_LIST_ID=/d' .env && echo "HUBSPOT_META_SYNC_LIST_ID=$HUBSPOT_META_SYNC_LIST_ID" >> .env
+            sed -i '/^HUBSPOT_SUBSCRIBED_LIST_ID=/d' .env && echo "HUBSPOT_SUBSCRIBED_LIST_ID=$HUBSPOT_SUBSCRIBED_LIST_ID" >> .env
             docker-compose up -d leadgen
