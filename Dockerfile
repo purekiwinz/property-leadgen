@@ -57,11 +57,23 @@ ENV HUBSPOT_SUBSCRIBED_LIST_ID=$HUBSPOT_SUBSCRIBED_LIST_ID
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
+# Chromium for PDF generation (Alpine packages, confirmed available on node:22-alpine)
+RUN apk add --no-cache \
+  chromium \
+  nss \
+  freetype \
+  harfbuzz \
+  ca-certificates \
+  ttf-freefont
+
+ENV CHROMIUM_PATH=/usr/bin/chromium-browser
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-RUN npm install sharp --no-save
+RUN npm install sharp puppeteer-core --no-save
 
 USER nextjs
 EXPOSE 3000

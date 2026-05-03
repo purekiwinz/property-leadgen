@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import QRCode from 'qrcode';
 
 export async function POST(req: NextRequest) {
   const { url, code, color = '#387f73' } = await req.json();
@@ -8,6 +7,7 @@ export async function POST(req: NextRequest) {
   const isValidHex = /^#[0-9A-Fa-f]{6}$/.test(color);
   const dark = isValidHex ? color : '#387f73';
 
+  const QRCode = (await import('qrcode')).default;
   const buffer = await QRCode.toBuffer(url, {
     type: 'png',
     width: 512,

@@ -163,7 +163,7 @@ META_WEBHOOK_VERIFY_TOKEN=          # For meta-webhook verification
    `NEXT_PUBLIC_` vars must be passed as build args — they are baked into the bundle at build time, not read at runtime.
    ```bash
    docker buildx build --platform linux/amd64 \
-     --build-arg NEXT_PUBLIC_SUPABASE_URL=https://oqamgffryhebyxkgemak.supabase.co \
+     --build-arg NEXT_PUBLIC_SUPABASE_URL=https://wbncgzpzctoqwzbrbfdg.supabase.co \
      --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon_key_from_.env.local> \
      --build-arg NEXT_PUBLIC_MAPBOX_API_KEY=<mapbox_token_from_.env.local> \
      -t ghcr.io/purekiwinz/property-leadgen:latest --push .
@@ -177,13 +177,13 @@ META_WEBHOOK_VERIFY_TOKEN=          # For meta-webhook verification
 
 3. **Supabase migrations:**
    ```bash
-   npx supabase db push --project-ref oqamgffryhebyxkgemak
+   npx supabase db push --project-ref wbncgzpzctoqwzbrbfdg
    ```
 
 4. **Deploy Edge Functions:**
    ```bash
-   npx supabase functions deploy send-appraisal-email --project-ref oqamgffryhebyxkgemak
-   npx supabase functions deploy meta-webhook --project-ref oqamgffryhebyxkgemak
+   npx supabase functions deploy send-appraisal-email --project-ref wbncgzpzctoqwzbrbfdg
+   npx supabase functions deploy meta-webhook --project-ref wbncgzpzctoqwzbrbfdg
    ```
 
 ---
@@ -258,4 +258,4 @@ META_WEBHOOK_VERIFY_TOKEN=          # For meta-webhook verification
 ## Known Issues / Pending
 
 - SSH from developer machine to `147.93.60.57:22` intermittently times out — use Hostinger hPanel web terminal as fallback
-- `updated_at` migration (`20260315150000_recent_sales_updated_at.sql`) needs to be applied to production Supabase if not already done: `npx supabase db push --project-ref oqamgffryhebyxkgemak`
+- `updated_at` migration (`20260315150000_recent_sales_updated_at.sql`) needs to be applied to production Supabase if not already done: `npx supabase db push --project-ref wbncgzpzctoqwzbrbfdg`

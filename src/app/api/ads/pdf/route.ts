@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import puppeteer from 'puppeteer-core';
 import { supabase } from '@/lib/supabase';
 import fs from 'fs';
 
@@ -44,6 +43,7 @@ export async function GET(req: NextRequest) {
   const result = await buildHtml(page);
   if (!result) return NextResponse.json({ error: 'Unknown page' }, { status: 400 });
 
+  const puppeteer = (await import('puppeteer-core')).default;
   const browser = await puppeteer.launch({
     executablePath: chromiumPath(),
     args: [
