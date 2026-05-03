@@ -16,10 +16,10 @@ export async function GET(req: NextRequest) {
   const { data: { user }, error: authError } = await anonClient.auth.getUser(token);
   if (authError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  // Fetch with service role key — bypasses RLS, uses public schema where leads are stored
   const adminClient = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { db: { schema: 'leadgen' } }
   );
 
   const { data, error } = await adminClient
@@ -49,7 +49,8 @@ export async function DELETE(req: NextRequest) {
 
   const adminClient = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { db: { schema: 'leadgen' } }
   );
 
   const { error } = await adminClient.from("appraisal_leads").delete().eq("id", id);
