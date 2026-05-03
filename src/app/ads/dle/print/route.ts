@@ -1,5 +1,16 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import fs from 'fs';
+import path from 'path';
+
+const agentImgSrc = (() => {
+  try {
+    const file = fs.readFileSync(path.join(process.cwd(), 'public', 'agent_transparent.webp'));
+    return `data:image/webp;base64,${file.toString('base64')}`;
+  } catch {
+    return 'https://leads.edscanlan.co.nz/agent_transparent.webp';
+  }
+})();
 
 type Sale = {
   id: number;
@@ -107,7 +118,7 @@ function renderFront(suburb: Suburb, idx: number): string {
   const qrId = `${qr.id}-${idx}`;
   return `<div class="dle dle-front">
     <div class="col-agent">
-      <img class="agent-img" src="https://edscanlan.co.nz/agent_transparent.webp" alt="Ed Scanlan">
+      <img class="agent-img" src="${agentImgSrc}" alt="Ed Scanlan">
     </div>
     <div class="col-content">
       <div class="headline-block">
