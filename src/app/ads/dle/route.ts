@@ -11,13 +11,10 @@ type Sale = {
   parking: number | null;
   days: string | null;
   updated_at: string | null;
+  display_order: number | null;
 };
 
 /* ─── config ─── */
-const MONTHS_LONG = [
-  'January','February','March','April','May','June',
-  'July','August','September','October','November','December',
-];
 
 const SUBURBS = ['Orewa', 'Millwater', 'Milldale', 'Red Beach'] as const;
 type Suburb = typeof SUBURBS[number];
@@ -30,10 +27,10 @@ const PROXIMITY: Record<Suburb, Suburb[]> = {
 };
 
 const QR_MAP: Record<Suburb, { id: string; url: string }> = {
-  'Orewa':     { id: 'qr-orewa',     url: 'https://leads.edscanlan.co.nz?suburb=Orewa&utm_medium=print' },
-  'Millwater': { id: 'qr-millwater', url: 'https://leads.edscanlan.co.nz?suburb=Millwater&utm_medium=print' },
-  'Milldale':  { id: 'qr-milldale',  url: 'https://leads.edscanlan.co.nz?suburb=Milldale&utm_medium=print' },
-  'Red Beach': { id: 'qr-redbeach',  url: 'https://leads.edscanlan.co.nz?suburb=Red+Beach&utm_medium=print' },
+  'Orewa':     { id: 'qr-orewa',     url: 'https://leads.edscanlan.co.nz?suburb=Orewa&utm_source=letterbox&utm_medium=qr&utm_campaign=hbc_appraisal_2026&source=dle' },
+  'Millwater': { id: 'qr-millwater', url: 'https://leads.edscanlan.co.nz?suburb=Millwater&utm_source=letterbox&utm_medium=qr&utm_campaign=hbc_appraisal_2026&source=dle' },
+  'Milldale':  { id: 'qr-milldale',  url: 'https://leads.edscanlan.co.nz?suburb=Milldale&utm_source=letterbox&utm_medium=qr&utm_campaign=hbc_appraisal_2026&source=dle' },
+  'Red Beach': { id: 'qr-redbeach',  url: 'https://leads.edscanlan.co.nz?suburb=Red+Beach&utm_source=letterbox&utm_medium=qr&utm_campaign=hbc_appraisal_2026&source=dle' },
 };
 
 /* ─── inline SVG icons ─── */
@@ -42,6 +39,14 @@ const BATH_ICON = `<svg style="width:12px;height:12px;vertical-align:middle;marg
 const CAR_ICON = `<svg style="width:12px;height:12px;vertical-align:middle;margin-right:2px;display:inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l1.8-5.4A2 2 0 018.7 6h6.6a2 2 0 011.9 1.6L19 13"/><rect x="2" y="13" width="20" height="5" rx="1"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/><line x1="9" y1="18" x2="15" y2="18"/><path d="M9 9.5h6"/></svg>`;
 
 /* ─── helpers ─── */
+function abbrevMonth(s: string): string {
+  const map: Record<string, string> = {
+    'January':'Jan','February':'Feb','March':'Mar','April':'Apr','May':'May','June':'Jun',
+    'July':'Jul','August':'Aug','September':'Sep','October':'Oct','November':'Nov','December':'Dec',
+  };
+  return s.replace(/^(January|February|March|April|May|June|July|August|September|October|November|December)/, m => map[m] ?? m);
+}
+
 function esc(s: string): string {
   return s
     .replace(/&/g, '&amp;')
@@ -60,16 +65,9 @@ function detectSuburb(address: string): string {
 }
 
 function sortSales(sales: Sale[]): Sale[] {
-  const toNum = (d: string | null) => {
-    if (!d) return 0;
-    const [m, y] = d.split(' ');
-    const mi = MONTHS_LONG.indexOf(m);
-    return isNaN(parseInt(y)) || mi === -1 ? 0 : parseInt(y) * 12 + mi;
-  };
-  return [...sales].sort((a, b) => {
-    const diff = toNum(b.days) - toNum(a.days);
-    return diff !== 0 ? diff : new Date(b.updated_at ?? 0).getTime() - new Date(a.updated_at ?? 0).getTime();
-  });
+  return [...sales].sort((a, b) =>
+    (a.display_order ?? 9999) - (b.display_order ?? 9999)
+  );
 }
 
 function getSalesForSuburb(sales: Sale[], suburb: Suburb): Sale[] {
@@ -108,8 +106,7 @@ function renderSaleTile(sale: Sale | null): string {
   return `<div class="sale-tile">
     <div class="tile-img-wrap">
       ${sale.image ? `<img class="tile-img" src="${esc(sale.image)}" alt="${esc(sale.address)}" loading="eager">` : ''}
-      <div class="sold-wrap"><div class="sold-band"><span class="sold-text">Sold</span></div></div>
-      ${sale.days ? `<div class="tile-month-pill">${esc(sale.days)}</div>` : ''}
+      <div class="sold-wrap"><div class="sold-band"><span class="sold-text">Sold</span>${sale.days ? `<span class="sold-month">${esc(abbrevMonth(sale.days))}</span>` : ''}</div></div>
     </div>
     <div class="tile-content">
       <p class="tile-addr">${esc(street)}${suburb ? `,<br><span class="tile-sub">${esc(suburb)}</span>` : ''}</p>
@@ -157,7 +154,7 @@ function renderBackAd(suburb: Suburb, sales: Sale[]): string {
     <div class="back-header">
       <div class="bh-heading">
         <span class="bh-suburb">Hibiscus Coast</span>
-        <span class="bh-title">Recent Results</span>
+        <span class="bh-title">Local Sales</span>
       </div>
       <div class="bh-spacer"></div>
       <div class="bh-tagline">Proven local results by Ed Scanlan &middot; 021 814 578</div>
@@ -305,29 +302,24 @@ function generateHtml(sales: Sale[]): string {
     .tile-img-wrap { position: relative; flex: 0 0 58%; overflow: hidden; }
     .tile-img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-    /* SOLD diagonal band */
+    /* SOLD diagonal band with month */
     .sold-wrap { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
     .sold-band {
       position: absolute;
       background: #FF4753;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 2px;
       width: 220%;
-      height: 40px;
-      top: 2%;
+      height: 58px;
+      top: -5%;
       left: -30%;
       transform: rotate(45deg);
     }
     .sold-text { font-family: 'Source Serif 4', Georgia, serif; font-style: italic; font-weight: 400; font-size: 16px; color: #fff; letter-spacing: 0.02em; }
-
-    /* Month pill — top-left of image */
-    .tile-month-pill {
-      position: absolute; top: 5px; left: 5px;
-      background: #FF4753; border-radius: 20px;
-      padding: 3px 8px;
-      font-family: 'Source Serif 4', Georgia, serif; font-style: italic; font-weight: 400; font-size: 9px; color: #fff;
-    }
+    .sold-month { font-family: 'Source Serif 4', Georgia, serif; font-style: italic; font-weight: 400; font-size: 10px; color: #fff; letter-spacing: 0.02em; }
 
     /* Tile content below image */
     .tile-content { flex: 1; padding: 10px 8px 6px; display: flex; flex-direction: column; justify-content: flex-start; gap: 4px; }
@@ -346,7 +338,7 @@ function generateHtml(sales: Sale[]): string {
     /* print */
     @media print {
       body { background: white; padding: 0; gap: 0; }
-      .page-header, .instructions, .suburb-header, .side-label { display: none; }
+      .page-header, .instructions, .suburb-header, .side-label, .pdf-dl { display: none; }
       .suburb-section { page-break-after: avoid; }
       .flyer-pair { gap: 0; flex-direction: column; }
       .flyer-col { gap: 0; }
@@ -354,9 +346,22 @@ function generateHtml(sales: Sale[]): string {
       .col-agent { width: 29%; }
       .col-qr { width: 26%; }
     }
+
+    .pdf-dl { position: fixed; bottom: 24px; right: 24px; z-index: 9999; }
+    .pdf-dl a {
+      display: flex; align-items: center; gap: 8px;
+      background: #FF4753; color: #fff;
+      font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700;
+      padding: 11px 20px; border-radius: 8px; text-decoration: none;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+    }
   </style>
 </head>
 <body>
+
+<div class="pdf-dl">
+  <a href="/api/ads/pdf?page=dle-print">&#8659; Download PDF</a>
+</div>
 
 <!-- Logo symbol — referenced via <use href="#prof-logo"> throughout the page -->
 <svg style="display:none" aria-hidden="true">

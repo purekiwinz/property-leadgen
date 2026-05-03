@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
-import { List, Users, LogOut, Save, Trash2, Upload } from "lucide-react";
+import { List, Users, LogOut, Save, Trash2, Upload, Link2, QrCode, Copy, ChevronDown, ChevronUp, Plus, ExternalLink } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
@@ -18,12 +18,9 @@ function parseSoldMonth(days: string | null): number {
 }
 
 function sortSales(list: any[]): any[] {
-  return [...list].sort((a, b) => {
-    const diff = parseSoldMonth(b.days) - parseSoldMonth(a.days);
-    if (diff !== 0) return diff;
-    // Same month — newest updated_at first
-    return new Date(b.updated_at ?? 0).getTime() - new Date(a.updated_at ?? 0).getTime();
-  });
+  return [...list].sort((a, b) =>
+    (a.display_order ?? 9999) - (b.display_order ?? 9999)
+  );
 }
 
 export default function AdminDashboard() {
@@ -39,9 +36,17 @@ export default function AdminDashboard() {
   // Data states
   const [leads, setLeads] = useState<any[]>([]);
   const [sales, setSales] = useState<any[]>([]);
+  const [links, setLinks] = useState<any[]>([]);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [uploadingId, setUploadingId] = useState<string | null>(null);
   const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
+
+  // Links state
+  const [linkForm, setLinkForm] = useState<any | null>(null);
+  const [linkSaving, setLinkSaving] = useState(false);
+  const [expandedLinkId, setExpandedLinkId] = useState<string | null>(null);
+  const [linkClicks, setLinkClicks] = useState<Record<string, any[]>>({});
+  const [loadingClicks, setLoadingClicks] = useState<string | null>(null);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -66,6 +71,10 @@ export default function AdminDashboard() {
     if (salesError) setFetchError('Sales: ' + salesError.message);
     if (salesData) setSales(sortSales(salesData));
 
+    const linksHeaders: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
+    const linksRes = await fetch('/api/admin/links', { headers: linksHeaders });
+    if (linksRes.ok) setLinks(await linksRes.json());
+
     setIsLoading(false);
   };
 
@@ -83,6 +92,91 @@ export default function AdminDashboard() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // ── Link helpers ────────────────────────────────────────────────
+  const authHeader = async (): Promise<Record<string, string>> => {
+    const { data: { session: s } } = await supabase.auth.getSession();
+    return s?.access_token ? { Authorization: `Bearer ${s.access_token}` } : {};
+  };
+
+  const fetchLinks = async () => {
+    const h = await authHeader();
+    const res = await fetch('/api/admin/links', { headers: h });
+    if (res.ok) setLinks(await res.json());
+  };
+
+  const saveLink = async () => {
+    if (!linkForm) return;
+    setLinkSaving(true);
+    const method = linkForm.id ? 'PUT' : 'POST';
+    const h = await authHeader();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { clicks_total, clicks_today, clicks_week, clicks_month, ...linkPayload } = linkForm;
+    const res = await fetch('/api/admin/links', {
+      method,
+      headers: { 'Content-Type': 'application/json', ...h },
+      body: JSON.stringify(linkPayload),
+    });
+    setLinkSaving(false);
+    if (!res.ok) { alert('Save failed: ' + (await res.json()).error); return; }
+    setLinkForm(null);
+    fetchLinks();
+  };
+
+  const deleteLink = async (id: string) => {
+    if (!confirm('Delete this link and all its click data?')) return;
+    const h = await authHeader();
+    const res = await fetch(`/api/admin/links?id=${id}`, { method: 'DELETE', headers: h });
+    if (!res.ok) { alert('Delete failed'); return; }
+    setLinks(links.filter(l => l.id !== id));
+  };
+
+  const fetchLinkClicks = async (linkId: string) => {
+    if (linkClicks[linkId]) { setExpandedLinkId(expandedLinkId === linkId ? null : linkId); return; }
+    setLoadingClicks(linkId);
+    const h = await authHeader();
+    const res = await fetch(`/api/admin/links/${linkId}/clicks`, { headers: h });
+    if (res.ok) {
+      const data = await res.json();
+      setLinkClicks(prev => ({ ...prev, [linkId]: data }));
+    }
+    setLoadingClicks(null);
+    setExpandedLinkId(linkId);
+  };
+
+  const downloadQR = async (link: any) => {
+    const shortUrl = `${window.location.origin}/links/${link.code}`;
+    const res = await fetch('/api/links/qr', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: shortUrl, code: link.code, color: link.qr_color || '#387f73' }),
+    });
+    if (!res.ok) { alert('QR generation failed'); return; }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `qr-${link.code}.png`; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const copyShortUrl = (code: string) => {
+    navigator.clipboard.writeText(`${window.location.origin}/links/${code}`);
+  };
+
+  const newLinkDefaults = () => ({
+    code: `qr${Math.floor(1000 + Math.random() * 9000)}`,
+    label: '',
+    destination_url: '',
+    source: '',
+    utm_source: '',
+    utm_medium: '',
+    utm_campaign: '',
+    utm_content: '',
+    utm_term: '',
+    qr_color: '#387f73',
+    is_active: true,
+  });
+  // ────────────────────────────────────────────────────────────────
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,6 +203,7 @@ export default function AdminDashboard() {
       parking: sale.parking,
       sale_method: sale.sale_method,
       image: sale.image,
+      display_order: sale.display_order ? parseInt(sale.display_order) : null,
     }).eq('id', sale.id);
 
     if (error) {
@@ -200,6 +295,9 @@ export default function AdminDashboard() {
           </button>
           <button onClick={() => setActiveTab('sales')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'sales' ? 'bg-[#FF4753] text-white' : 'text-white/60 hover:text-white hover:bg-white/10'}`}>
             <List className="w-5 h-5" /> Recent Sales
+          </button>
+          <button onClick={() => setActiveTab('links')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'links' ? 'bg-[#FF4753] text-white' : 'text-white/60 hover:text-white hover:bg-white/10'}`}>
+            <Link2 className="w-5 h-5" /> Short Links
           </button>
         </nav>
         <div className="p-4 border-t border-white/10">
@@ -338,7 +436,11 @@ export default function AdminDashboard() {
                       <input type="text" value={sale.address || ''} onChange={e => updateSale(sale.id, 'address', e.target.value)} className="w-full p-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-[#FF4753] text-sm font-medium" />
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 mb-1">Sort Order</label>
+                        <input type="number" min="1" value={sale.display_order || ''} onChange={e => updateSale(sale.id, 'display_order', e.target.value)} className="w-full p-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-[#FF4753] text-sm font-medium" placeholder="1" />
+                      </div>
                       <div>
                         <label className="block text-xs font-bold text-slate-500 mb-1">Bedrooms</label>
                         <input type="number" value={sale.beds || ''} onChange={e => updateSale(sale.id, 'beds', e.target.value)} className="w-full p-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-[#FF4753] text-sm font-medium" />
@@ -392,6 +494,336 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'links' && (
+          <div className="space-y-6 max-w-5xl mx-auto">
+            <div className="flex items-center justify-between">
+              <h2 className="text-3xl font-black text-slate-900">Short Links <span className="text-lg text-slate-400 font-medium">({links.length})</span></h2>
+              <button
+                onClick={() => setLinkForm(newLinkDefaults())}
+                className="flex items-center gap-2 bg-[#387f73] text-white font-bold px-4 py-2.5 rounded-xl hover:brightness-110 transition-all"
+              >
+                <Plus className="w-4 h-4" /> New Link
+              </button>
+            </div>
+
+            {/* Create / Edit form */}
+            {linkForm && (
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-4">
+                <h3 className="font-black text-slate-900 text-lg">{linkForm.id ? 'Edit Link' : 'New Link'}</h3>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1">Short Code</label>
+                    <input
+                      type="text"
+                      value={linkForm.code}
+                      onChange={e => setLinkForm({ ...linkForm, code: e.target.value })}
+                      className="w-full p-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-[#387f73] text-sm font-mono font-bold"
+                      placeholder="qr1234"
+                    />
+                    <p className="text-xs text-slate-400 mt-1">/links/{linkForm.code || '…'}</p>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1">Label</label>
+                    <input
+                      type="text"
+                      value={linkForm.label || ''}
+                      onChange={e => setLinkForm({ ...linkForm, label: e.target.value })}
+                      className="w-full p-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-[#387f73] text-sm"
+                      placeholder="Facebook Orewa May 2026"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="col-span-2">
+                    <label className="block text-xs font-bold text-slate-500 mb-1">Destination URL</label>
+                    <input
+                      type="url"
+                      value={linkForm.destination_url}
+                      onChange={e => setLinkForm({ ...linkForm, destination_url: e.target.value })}
+                      className="w-full p-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-[#387f73] text-sm"
+                      placeholder="https://leads.edscanlan.co.nz"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1">Source <span className="font-normal text-slate-400">(lead origin → HubSpot)</span></label>
+                    <select
+                      value={linkForm.source || ''}
+                      onChange={e => setLinkForm({ ...linkForm, source: e.target.value })}
+                      className="w-full p-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-[#387f73] text-sm bg-white"
+                    >
+                      <option value="">— none —</option>
+                      <option value="website">website</option>
+                      <option value="dle">dle</option>
+                      <option value="letterbox">letterbox</option>
+                      <option value="flyer">flyer</option>
+                      <option value="signboard">signboard</option>
+                      <option value="facebook">facebook</option>
+                      <option value="instagram">instagram</option>
+                      <option value="google">google</option>
+                      <option value="email">email</option>
+                      <option value="other">other</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* UTM parameters — source & medium are dropdowns, rest free-form */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1">utm_source <span className="text-red-400">*</span></label>
+                    <select
+                      value={linkForm.utm_source || ''}
+                      onChange={e => setLinkForm({ ...linkForm, utm_source: e.target.value })}
+                      className="w-full p-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-[#387f73] text-sm bg-white"
+                    >
+                      <option value="">— select —</option>
+                      <optgroup label="Print">
+                        <option value="letterbox">letterbox</option>
+                        <option value="flyer">flyer</option>
+                        <option value="signboard">signboard</option>
+                        <option value="brochure">brochure</option>
+                        <option value="postcard">postcard</option>
+                        <option value="window_card">window_card</option>
+                        <option value="open_home_programme">open_home_programme</option>
+                      </optgroup>
+                      <optgroup label="Digital">
+                        <option value="facebook">facebook</option>
+                        <option value="instagram">instagram</option>
+                        <option value="google">google</option>
+                        <option value="realestate_com_au">realestate_com_au</option>
+                        <option value="domain">domain</option>
+                        <option value="mailchimp">mailchimp</option>
+                        <option value="email_signature">email_signature</option>
+                      </optgroup>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1">utm_medium <span className="text-red-400">*</span></label>
+                    <select
+                      value={linkForm.utm_medium || ''}
+                      onChange={e => setLinkForm({ ...linkForm, utm_medium: e.target.value })}
+                      className="w-full p-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-[#387f73] text-sm bg-white"
+                    >
+                      <option value="">— select —</option>
+                      <option value="qr">qr — print QR code</option>
+                      <option value="cpc">cpc — paid digital ad</option>
+                      <option value="social">social — organic social</option>
+                      <option value="email">email — email campaign</option>
+                      <option value="referral">referral — listing portal</option>
+                      <option value="direct_mail">direct_mail — posted mail</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1">utm_campaign <span className="text-red-400">*</span></label>
+                    <input
+                      type="text"
+                      value={linkForm.utm_campaign || ''}
+                      onChange={e => setLinkForm({ ...linkForm, utm_campaign: e.target.value.toLowerCase().replace(/\s+/g, '_') })}
+                      className="w-full p-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-[#387f73] text-sm"
+                      placeholder="14_maple_st_launch"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1">utm_content</label>
+                    <input
+                      type="text"
+                      value={linkForm.utm_content || ''}
+                      onChange={e => setLinkForm({ ...linkForm, utm_content: e.target.value.toLowerCase().replace(/\s+/g, '_') })}
+                      className="w-full p-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-[#387f73] text-sm"
+                      placeholder="open_home_flyer"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1">utm_term</label>
+                    <input
+                      type="text"
+                      value={linkForm.utm_term || ''}
+                      onChange={e => setLinkForm({ ...linkForm, utm_term: e.target.value.toLowerCase().replace(/\s+/g, '_') })}
+                      className="w-full p-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-[#387f73] text-sm"
+                      placeholder="audience_segment"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-end gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1">QR Code Colour</label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        value={linkForm.qr_color || '#387f73'}
+                        onChange={e => setLinkForm({ ...linkForm, qr_color: e.target.value })}
+                        className="w-10 h-10 rounded-lg border border-slate-200 cursor-pointer p-0.5"
+                      />
+                      <input
+                        type="text"
+                        value={linkForm.qr_color || '#387f73'}
+                        onChange={e => {
+                          const v = e.target.value;
+                          if (/^#[0-9A-Fa-f]{0,6}$/.test(v)) setLinkForm({ ...linkForm, qr_color: v });
+                        }}
+                        className="w-28 p-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-[#387f73] text-sm font-mono"
+                        placeholder="#387f73"
+                      />
+                    </div>
+                  </div>
+
+                  <label className="flex items-center gap-2 text-sm font-bold text-slate-700 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={linkForm.is_active}
+                      onChange={e => setLinkForm({ ...linkForm, is_active: e.target.checked })}
+                      className="w-4 h-4 accent-[#387f73]"
+                    />
+                    Active
+                  </label>
+
+                  <div className="flex gap-2 ml-auto">
+                    <button
+                      onClick={() => setLinkForm(null)}
+                      className="px-4 py-2.5 rounded-xl font-bold text-sm text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={saveLink}
+                      disabled={linkSaving || !linkForm.code || !linkForm.destination_url}
+                      className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm bg-[#387f73] text-white hover:brightness-110 transition-all disabled:opacity-50"
+                    >
+                      <Save className="w-4 h-4" />
+                      {linkSaving ? 'Saving…' : 'Save'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Links table */}
+            <div className={`bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden${linkForm ? ' hidden' : ''}`}>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
+                      <th className="p-4 font-bold border-b">Link</th>
+                      <th className="p-4 font-bold border-b text-center">Today</th>
+                      <th className="p-4 font-bold border-b text-center">7 days</th>
+                      <th className="p-4 font-bold border-b text-center">30 days</th>
+                      <th className="p-4 font-bold border-b text-center">All time</th>
+                      <th className="p-4 font-bold border-b"></th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {links.map(link => (
+                      <>
+                        <tr key={link.id} className="hover:bg-slate-50 transition-colors text-sm">
+                          <td className="p-4">
+                            <div className="flex items-center gap-2">
+                              <span className={`w-2 h-2 rounded-full flex-shrink-0 ${link.is_active ? 'bg-emerald-400' : 'bg-slate-300'}`} />
+                              <div>
+                                <div className="flex items-center gap-1.5">
+                                  <span className="font-mono font-bold text-slate-900">/links/{link.code}</span>
+                                  <button onClick={() => copyShortUrl(link.code)} title="Copy URL" className="text-slate-400 hover:text-[#387f73] transition-colors">
+                                    <Copy className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                                {link.label && <div className="text-xs text-slate-500 font-medium mt-0.5">{link.label}</div>}
+                                <div className="text-xs text-slate-400 truncate max-w-xs mt-0.5">{link.destination_url}</div>
+                                {(link.utm_source || link.utm_medium || link.utm_campaign) && (
+                                  <div className="flex gap-1 mt-1 flex-wrap">
+                                    {link.utm_source && <span className="bg-blue-50 text-blue-600 text-[10px] font-bold px-1.5 py-0.5 rounded">{link.utm_source}</span>}
+                                    {link.utm_medium && <span className="bg-purple-50 text-purple-600 text-[10px] font-bold px-1.5 py-0.5 rounded">{link.utm_medium}</span>}
+                                    {link.utm_campaign && <span className="bg-amber-50 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded">{link.utm_campaign}</span>}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="p-4 text-center font-bold text-slate-800">{link.clicks_today ?? 0}</td>
+                          <td className="p-4 text-center font-bold text-slate-800">{link.clicks_week ?? 0}</td>
+                          <td className="p-4 text-center font-bold text-slate-800">{link.clicks_month ?? 0}</td>
+                          <td className="p-4 text-center font-bold text-slate-800">{link.clicks_total ?? 0}</td>
+                          <td className="p-4">
+                            <div className="flex items-center gap-1 justify-end">
+                              {/* QR colour swatch */}
+                              <span
+                                className="w-5 h-5 rounded border border-slate-200 flex-shrink-0"
+                                style={{ background: link.qr_color || '#387f73' }}
+                                title={`QR colour: ${link.qr_color || '#387f73'}`}
+                              />
+                              <button onClick={() => downloadQR(link)} title="Download QR code" className="p-1.5 text-slate-400 hover:text-[#387f73] transition-colors">
+                                <QrCode className="w-4 h-4" />
+                              </button>
+                              <a href={`/links/${link.code}`} target="_blank" rel="noopener" title="Open link" className="p-1.5 text-slate-400 hover:text-[#387f73] transition-colors">
+                                <ExternalLink className="w-4 h-4" />
+                              </a>
+                              <button
+                                onClick={() => fetchLinkClicks(link.id)}
+                                title="View click history"
+                                className="p-1.5 text-slate-400 hover:text-[#387f73] transition-colors"
+                              >
+                                {expandedLinkId === link.id ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                              </button>
+                              <button onClick={() => setLinkForm({ ...link })} title="Edit" className="p-1.5 text-slate-400 hover:text-slate-700 transition-colors">
+                                <Save className="w-4 h-4" />
+                              </button>
+                              <button onClick={() => deleteLink(link.id)} title="Delete" className="p-1.5 text-slate-400 hover:text-red-500 transition-colors">
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                        {expandedLinkId === link.id && (
+                          <tr key={`${link.id}-clicks`}>
+                            <td colSpan={6} className="bg-slate-50 px-6 py-4 border-b">
+                              {loadingClicks === link.id ? (
+                                <p className="text-sm text-slate-500">Loading clicks…</p>
+                              ) : (linkClicks[link.id]?.length ?? 0) === 0 ? (
+                                <p className="text-sm text-slate-500">No clicks recorded yet.</p>
+                              ) : (
+                                <div className="overflow-x-auto">
+                                  <table className="w-full text-xs border-collapse">
+                                    <thead>
+                                      <tr className="text-slate-400 uppercase tracking-wider">
+                                        <th className="pb-2 pr-4 font-bold text-left">Time</th>
+                                        <th className="pb-2 pr-4 font-bold text-left">Referer</th>
+                                        <th className="pb-2 pr-4 font-bold text-left">IP</th>
+                                        <th className="pb-2 font-bold text-left">User Agent</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-200">
+                                      {(linkClicks[link.id] || []).map((click: any) => (
+                                        <tr key={click.id} className="text-slate-600">
+                                          <td className="py-1.5 pr-4 whitespace-nowrap font-medium">
+                                            {new Date(click.clicked_at).toLocaleString('en-NZ', { dateStyle: 'short', timeStyle: 'short' })}
+                                          </td>
+                                          <td className="py-1.5 pr-4 max-w-[200px] truncate text-slate-500">
+                                            {click.referer || <span className="text-slate-300">—</span>}
+                                          </td>
+                                          <td className="py-1.5 pr-4 font-mono text-slate-500">{click.ip_address}</td>
+                                          <td className="py-1.5 max-w-[280px] truncate text-slate-400">{click.user_agent}</td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                  <p className="text-xs text-slate-400 mt-2">Showing last {linkClicks[link.id]?.length} clicks</p>
+                                </div>
+                              )}
+                            </td>
+                          </tr>
+                        )}
+                      </>
+                    ))}
+                    {links.length === 0 && (
+                      <tr><td colSpan={6} className="p-8 text-center text-slate-500 font-medium">No links yet. Create your first short link above.</td></tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}

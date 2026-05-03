@@ -10,21 +10,22 @@ type Sale = {
   parking: number | null;
   days: string | null;
   updated_at: string | null;
+  display_order: number | null;
 };
 
-const MONTHS_LONG = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function abbrevMonth(s: string): string {
+  const map: Record<string, string> = {
+    'January':'Jan','February':'Feb','March':'Mar','April':'Apr','May':'May','June':'Jun',
+    'July':'Jul','August':'Aug','September':'Sep','October':'Oct','November':'Nov','December':'Dec',
+  };
+  return s.replace(/^(January|February|March|April|May|June|July|August|September|October|November|December)/, m => map[m] ?? m);
+}
 
 function sortSales(sales: Sale[]): Sale[] {
-  const toNum = (d: string | null) => {
-    if (!d) return 0;
-    const [m, y] = d.split(' ');
-    const mi = MONTHS_LONG.indexOf(m);
-    return isNaN(parseInt(y)) || mi === -1 ? 0 : parseInt(y) * 12 + mi;
-  };
-  return [...sales].sort((a, b) => {
-    const diff = toNum(b.days) - toNum(a.days);
-    return diff !== 0 ? diff : new Date(b.updated_at ?? 0).getTime() - new Date(a.updated_at ?? 0).getTime();
-  });
+  return [...sales].sort((a, b) =>
+    (a.display_order ?? 9999) - (b.display_order ?? 9999)
+  );
 }
 
 function esc(s: string) {
@@ -47,7 +48,7 @@ function renderCard(sale: Sale): string {
 
   return `<div class="card">
     <img class="card-img" src="${esc(sale.image!)}" alt="${esc(sale.address)}">
-    <div class="sold-wrap"><div class="sold-band"><span class="sold-text">Sold</span></div></div>
+    <div class="sold-wrap"><div class="sold-band"><span class="sold-text">Sold</span>${sale.days ? `<span class="sold-month">${esc(abbrevMonth(sale.days))}</span>` : ''}</div></div>
     <div class="card-content">
       <p class="card-street">${esc(street)}</p>
       ${suburb ? `<p class="card-suburb">${esc(suburb)}</p>` : ''}
@@ -56,7 +57,7 @@ function renderCard(sale: Sale): string {
   </div>`;
 }
 
-function generateHtml(sales: Sale[]): string {
+export function generateHtml(sales: Sale[]): string {
   const sorted = sortSales(sales.filter(s => s.image)).slice(0, 6);
   const cards  = sorted.map(s => renderCard(s)).join('');
 
@@ -64,7 +65,7 @@ function generateHtml(sales: Sale[]): string {
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Recent Sales — Ed Scanlan</title>
+  <title>Local Sales — Ed Scanlan</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Source+Serif+4:ital,opsz,wght@0,8..12,400;0,8..12,700;1,8..12,400;1,8..12,700&display=swap" rel="stylesheet">
@@ -171,11 +172,13 @@ function generateHtml(sales: Sale[]): string {
       position: absolute;
       background: #CC2229;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 0.5mm;
       width: 58%;
-      height: 8mm;
-      top: 7%;
+      height: 17mm;
+      top: 2%;
       right: -13%;
       transform: rotate(35deg);
     }
@@ -183,9 +186,17 @@ function generateHtml(sales: Sale[]): string {
       font-family: 'Source Serif 4', Georgia, serif;
       font-style: italic;
       font-weight: 400;
-      font-size: 11pt;
+      font-size: 13pt;
       color: #fff;
       letter-spacing: 0.08em;
+    }
+    .sold-month {
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: 9.5pt;
+      color: #fff;
+      letter-spacing: 0.04em;
     }
 
     /* Text content sits in the cream area at bottom-left */
@@ -197,11 +208,13 @@ function generateHtml(sales: Sale[]): string {
     }
     .card-street {
       font-family: 'Poppins', sans-serif;
-      font-size: 9pt;
+      font-size: 12pt;
       font-weight: 700;
       color: #252525;
       line-height: 1.25;
       margin-bottom: 0.8mm;
+      word-break: break-word;
+      overflow-wrap: break-word;
     }
     .card-suburb {
       font-family: 'Source Serif 4', Georgia, serif;
@@ -246,16 +259,31 @@ function generateHtml(sales: Sale[]): string {
     }
     @media print {
       html, body { margin: 0; box-shadow: none; }
+      .pdf-dl { display: none; }
+    }
+
+    .pdf-dl {
+      position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+    }
+    .pdf-dl a {
+      display: flex; align-items: center; gap: 8px;
+      background: #CC2229; color: #fff;
+      font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700;
+      padding: 11px 20px; border-radius: 8px; text-decoration: none;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.35);
     }
   </style>
 </head>
 <body>
+  <div class="pdf-dl">
+    <a href="/api/ads/pdf?page=recent-sales">&#8659; Download PDF</a>
+  </div>
 
   <div class="pill"><span class="pill-text">Sold Nearby</span></div>
 
   <div class="heading">
-    <span class="heading-sans">Recent</span>
-    <span class="heading-serif">Sales.</span>
+    <span class="heading-sans">Local</span>
+    <span class="heading-serif">Sales</span>
   </div>
 
   <div class="grid">

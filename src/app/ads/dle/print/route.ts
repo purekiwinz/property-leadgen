@@ -10,9 +10,9 @@ type Sale = {
   parking: number | null;
   days: string | null;
   updated_at: string | null;
+  display_order: number | null;
 };
 
-const MONTHS_LONG = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const SUBURBS = ['Orewa', 'Millwater', 'Milldale', 'Red Beach'] as const;
 type Suburb = typeof SUBURBS[number];
 
@@ -24,15 +24,23 @@ const PROXIMITY: Record<Suburb, Suburb[]> = {
 };
 
 const QR_MAP: Record<Suburb, { id: string; url: string }> = {
-  'Orewa':     { id: 'pr-qr-orewa',     url: 'https://edscanlan.co.nz?suburb=Orewa&utm_medium=print' },
-  'Millwater': { id: 'pr-qr-millwater', url: 'https://edscanlan.co.nz?suburb=Millwater&utm_medium=print' },
-  'Milldale':  { id: 'pr-qr-milldale',  url: 'https://edscanlan.co.nz?suburb=Milldale&utm_medium=print' },
-  'Red Beach': { id: 'pr-qr-redbeach',  url: 'https://edscanlan.co.nz?suburb=Red+Beach&utm_medium=print' },
+  'Orewa':     { id: 'pr-qr-orewa',     url: 'https://edscanlan.co.nz?suburb=Orewa&utm_source=letterbox&utm_medium=qr&utm_campaign=hbc_appraisal_2026&source=dle' },
+  'Millwater': { id: 'pr-qr-millwater', url: 'https://edscanlan.co.nz?suburb=Millwater&utm_source=letterbox&utm_medium=qr&utm_campaign=hbc_appraisal_2026&source=dle' },
+  'Milldale':  { id: 'pr-qr-milldale',  url: 'https://edscanlan.co.nz?suburb=Milldale&utm_source=letterbox&utm_medium=qr&utm_campaign=hbc_appraisal_2026&source=dle' },
+  'Red Beach': { id: 'pr-qr-redbeach',  url: 'https://edscanlan.co.nz?suburb=Red+Beach&utm_source=letterbox&utm_medium=qr&utm_campaign=hbc_appraisal_2026&source=dle' },
 };
 
 const BED_ICON  = `<svg style="width:4.5mm;height:4.5mm;vertical-align:middle;margin-right:0.75mm;display:inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 17V9.5A1.5 1.5 0 013.5 8h17A1.5 1.5 0 0122 9.5V17"/><path d="M2 13h20"/><path d="M6 13V10a1 1 0 011-1h4a1 1 0 011 1v3"/><line x1="4" y1="17" x2="4" y2="19"/><line x1="20" y1="17" x2="20" y2="19"/></svg>`;
 const BATH_ICON = `<svg style="width:4.5mm;height:4.5mm;vertical-align:middle;margin-right:0.75mm;display:inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="5" r="1" fill="currentColor" stroke="none"/><path d="M8 6v3"/><path d="M6 9h4"/><line x1="5" y1="11" x2="5" y2="12"/><line x1="7" y1="12" x2="7" y2="13"/><line x1="9" y1="11" x2="9" y2="12"/><path d="M2 16h20v1a2 2 0 01-2 2H4a2 2 0 01-2-2v-1z"/><line x1="5" y1="19" x2="5" y2="21"/><line x1="19" y1="19" x2="19" y2="21"/></svg>`;
 const CAR_ICON  = `<svg style="width:4.5mm;height:4.5mm;vertical-align:middle;margin-right:0.75mm;display:inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l1.8-5.4A2 2 0 018.7 6h6.6a2 2 0 011.9 1.6L19 13"/><rect x="2" y="13" width="20" height="5" rx="1"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/><line x1="9" y1="18" x2="15" y2="18"/><path d="M9 9.5h6"/></svg>`;
+
+function abbrevMonth(s: string): string {
+  const map: Record<string, string> = {
+    'January':'Jan','February':'Feb','March':'Mar','April':'Apr','May':'May','June':'Jun',
+    'July':'Jul','August':'Aug','September':'Sep','October':'Oct','November':'Nov','December':'Dec',
+  };
+  return s.replace(/^(January|February|March|April|May|June|July|August|September|October|November|December)/, m => map[m] ?? m);
+}
 
 function esc(s: string): string {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -48,16 +56,9 @@ function detectSuburb(address: string): string {
 }
 
 function sortSales(sales: Sale[]): Sale[] {
-  const toNum = (d: string | null) => {
-    if (!d) return 0;
-    const [m, y] = d.split(' ');
-    const mi = MONTHS_LONG.indexOf(m);
-    return isNaN(parseInt(y)) || mi === -1 ? 0 : parseInt(y) * 12 + mi;
-  };
-  return [...sales].sort((a, b) => {
-    const diff = toNum(b.days) - toNum(a.days);
-    return diff !== 0 ? diff : new Date(b.updated_at ?? 0).getTime() - new Date(a.updated_at ?? 0).getTime();
-  });
+  return [...sales].sort((a, b) =>
+    (a.display_order ?? 9999) - (b.display_order ?? 9999)
+  );
 }
 
 function getSalesForSuburb(sales: Sale[], suburb: Suburb): Sale[] {
@@ -92,8 +93,7 @@ function renderSaleTile(sale: Sale | null): string {
   return `<div class="sale-tile">
     <div class="tile-img-wrap">
       ${sale.image ? `<img class="tile-img" src="${esc(sale.image)}" alt="${esc(sale.address)}">` : ''}
-      <div class="sold-wrap"><div class="sold-band"><span class="sold-text">Sold</span></div></div>
-      ${sale.days ? `<div class="tile-month-pill">${esc(sale.days)}</div>` : ''}
+      <div class="sold-wrap"><div class="sold-band"><span class="sold-text">Sold</span>${sale.days ? `<span class="sold-month">${esc(abbrevMonth(sale.days))}</span>` : ''}</div></div>
     </div>
     <div class="tile-content">
       <p class="tile-addr">${esc(street)}${suburb ? `,<br><span class="tile-sub">${esc(suburb)}</span>` : ''}</p>
@@ -142,7 +142,7 @@ function renderBack(suburb: Suburb, sales: Sale[]): string {
     <div class="back-header">
       <div class="bh-heading">
         <span class="bh-suburb">Hibiscus Coast</span>
-        <span class="bh-title">Recent Results</span>
+        <span class="bh-title">Local Sales</span>
       </div>
       <div class="bh-spacer"></div>
       <div class="bh-tagline">Proven local results by Ed Scanlan &middot; 021 814 578</div>
@@ -161,7 +161,7 @@ function a4Page(dles: string[], isFirst: boolean): string {
   </div>`;
 }
 
-function generateHtml(sales: Sale[]): string {
+export function generateHtml(sales: Sale[]): string {
   const sorted = sortSales(sales.filter(s => s.image));
 
   // 2 A4 pages per suburb: 3× front then 3× back
@@ -353,22 +353,18 @@ function generateHtml(sales: Sale[]): string {
       position: absolute;
       background: #FF4753;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 0.75mm;
       width: 220%;
-      height: 15mm;
-      top: 2%;
+      height: 22mm;
+      top: -4%;
       left: -30%;
       transform: rotate(45deg);
     }
     .sold-text { font-family: 'Source Serif 4', Georgia, serif; font-style: italic; font-weight: 400; font-size: 17pt; color: #fff; letter-spacing: 0.02em; }
-
-    .tile-month-pill {
-      position: absolute; top: 1.875mm; left: 1.875mm;
-      background: #FF4753; border-radius: 7.5mm;
-      padding: 1.125mm 3mm;
-      font-family: 'Source Serif 4', Georgia, serif; font-style: italic; font-weight: 400; font-size: 9.5pt; color: #fff;
-    }
+    .sold-month { font-family: 'Source Serif 4', Georgia, serif; font-style: italic; font-weight: 400; font-size: 12pt; color: #fff; letter-spacing: 0.02em; }
 
     .tile-content { flex: 1; padding: 3.75mm 3mm 2.25mm; display: flex; flex-direction: column; justify-content: flex-start; gap: 1.5mm; }
     .tile-addr  { font-size: 10.5pt; font-weight: 700; color: #fff; line-height: 1.3; }
@@ -382,7 +378,7 @@ function generateHtml(sales: Sale[]): string {
 
     @media print {
       body { background: none; padding: 0; gap: 0; }
-      .screen-header { display: none; }
+      .screen-header, .pdf-dl { display: none; }
       .a4 { box-shadow: none; margin-bottom: 0; break-after: page; }
       .page-label { display: none; }
       .dle, .dle-front, .dle-back {
@@ -390,9 +386,24 @@ function generateHtml(sales: Sale[]): string {
         -webkit-print-color-adjust: exact;
       }
     }
+
+    .pdf-dl {
+      position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+    }
+    .pdf-dl a {
+      display: flex; align-items: center; gap: 8px;
+      background: #FF4753; color: #fff;
+      font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700;
+      padding: 11px 20px; border-radius: 8px; text-decoration: none;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+    }
   </style>
 </head>
 <body>
+
+<div class="pdf-dl">
+  <a href="/api/ads/pdf?page=dle-print">&#8659; Download PDF</a>
+</div>
 
 <svg style="display:none" aria-hidden="true">
   <defs>

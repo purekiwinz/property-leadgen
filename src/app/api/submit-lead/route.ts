@@ -110,14 +110,13 @@ async function addToMetaSyncList(token: string, contactId: string) {
   }
 }
 
-async function createHubSpotNote(token: string, contactId: string, suburb: string, medium: string) {
-  const channel = medium === 'print' ? 'mailbox drop' : 'Meta';
+async function createHubSpotNote(token: string, contactId: string, suburb: string, source: string) {
   await fetch("https://api.hubapi.com/crm/v3/objects/notes", {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     body: JSON.stringify({
       properties: {
-        hs_note_body: `Ad source: ${suburb} suburb campaign (${channel})`,
+        hs_note_body: `Lead source: ${source || 'website'}${suburb ? ` — ${suburb} suburb campaign` : ''}`,
         hs_timestamp: new Date().toISOString(),
       },
       associations: [{
@@ -139,6 +138,7 @@ async function pushToHubSpot(data: {
   optInMarketing: boolean;
   suburb: string;
   medium: string;
+  source: string;
 }) {
   const token = process.env.HUBSPOT_ACCESS_TOKEN;
   if (!token) return;
@@ -151,6 +151,7 @@ async function pushToHubSpot(data: {
     `Timeline: ${data.timeline}`,
     `Buying next: ${data.buyingNext}`,
     `Marketing opt-in: ${data.optInMarketing ? 'Yes — Quarterly Market Update' : 'No'}`,
+    `Source: ${data.source || 'website'}`,
     data.suburb ? `Ad suburb: ${data.suburb}` : '',
   ].filter(Boolean).join('\n');
 
@@ -214,7 +215,7 @@ async function pushToHubSpot(data: {
               ],
             }),
           }),
-          data.suburb ? createHubSpotNote(token, existingId, data.suburb, data.medium) : Promise.resolve(),
+          createHubSpotNote(token, existingId, data.suburb, data.source || data.medium),
           addToMetaSyncList(token, existingId),
           setMarketingSubscription(token, data.email, existingId, data.optInMarketing),
         ]);
@@ -246,7 +247,7 @@ async function pushToHubSpot(data: {
         ],
       }),
     }),
-    data.suburb ? createHubSpotNote(token, contact.id, data.suburb, data.medium) : Promise.resolve(),
+    createHubSpotNote(token, contact.id, data.suburb, data.source || data.medium),
     addToMetaSyncList(token, contact.id),
     setMarketingSubscription(token, data.email, contact.id, data.optInMarketing),
   ]);
@@ -259,13 +260,15 @@ export async function POST(req: NextRequest) {
   );
 
   const body = await req.json();
-  const { address, timeline, buyingNext, firstName, lastName, email, phone, optInMarketing, suburb, medium, eventId } = body;
+  const { address, timeline, buyingNext, firstName, lastName, email, phone, optInMarketing, suburb, medium, source, eventId } = body;
+
+  const resolvedSource = source || (medium === 'print' ? 'dle' : 'website');
 
   const { error } = await supabase.from("appraisal_leads").insert([{
     address, timeline, buying_next: buyingNext,
     first_name: firstName, last_name: lastName,
     email, phone,
-    source: medium === 'print' ? 'dle' : 'edscanlan',
+    source: resolvedSource,
     ad_suburb: suburb || null,
   }]);
 
@@ -274,7 +277,7 @@ export async function POST(req: NextRequest) {
   }
 
   await Promise.all([
-    pushToHubSpot({ firstName, lastName, email, phone, address, timeline, buyingNext, optInMarketing: !!optInMarketing, suburb: suburb || '', medium: medium || '' }).catch(
+    pushToHubSpot({ firstName, lastName, email, phone, address, timeline, buyingNext, optInMarketing: !!optInMarketing, suburb: suburb || '', medium: medium || '', source: resolvedSource }).catch(
       (e) => console.error("HubSpot push failed:", e)
     ),
     eventId

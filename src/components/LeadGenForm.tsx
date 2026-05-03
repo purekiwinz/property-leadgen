@@ -41,7 +41,7 @@ function isHibiscusCoast(address: string): boolean {
   return HIBISCUS_COAST_SUBURBS.some((suburb) => lower.includes(suburb));
 }
 
-export default function LeadGenForm({ suburb = '', medium = '' }: { suburb?: string; medium?: string }) {
+export default function LeadGenForm({ suburb = '', medium = '', source = '' }: { suburb?: string; medium?: string; source?: string }) {
   const [step, setStep] = useState(1);
 
   useEffect(() => {
@@ -121,6 +121,7 @@ export default function LeadGenForm({ suburb = '', medium = '' }: { suburb?: str
           optInMarketing: formData.optInMarketing,
           suburb,
           medium,
+          ...(source ? { source } : {}),
           eventId,
         }),
       });

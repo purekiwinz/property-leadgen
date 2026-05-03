@@ -8,19 +8,25 @@ import { supabase } from "@/lib/supabase";
 
 export const revalidate = 300; // Revalidate every 5 minutes
 
-export default async function Home({ searchParams }: { searchParams: Promise<{ suburb?: string; utm_medium?: string }> }) {
-  const { suburb: rawSuburb, utm_medium } = await searchParams;
+function abbrevMonth(s: string): string {
+  const map: Record<string, string> = {
+    'January':'Jan','February':'Feb','March':'Mar','April':'Apr','May':'May','June':'Jun',
+    'July':'Jul','August':'Aug','September':'Sep','October':'Oct','November':'Nov','December':'Dec',
+  };
+  return s.replace(/^(January|February|March|April|May|June|July|August|September|October|November|December)/, m => map[m] ?? m);
+}
+
+export default async function Home({ searchParams }: { searchParams: Promise<{ suburb?: string; utm_medium?: string; source?: string }> }) {
+  const { suburb: rawSuburb, utm_medium, source: rawSource } = await searchParams;
   const suburb = rawSuburb || '';
   const medium = utm_medium || '';
+  const source = rawSource || '';
   // Fetch dynamic data from Supabase
   const { data: settings } = await supabase.from('site_settings').select('*').eq('id', 1).single();
   const { data: rawSales } = await supabase.from('recent_sales').select('*');
-  const MONTHS_LONG = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  const sales = rawSales ? [...rawSales].sort((a, b) => {
-    const toNum = (d: string | null) => { if (!d) return 0; const [m,y] = d.split(' '); const mi = MONTHS_LONG.indexOf(m); return isNaN(parseInt(y)) || mi === -1 ? 0 : parseInt(y)*12+mi; };
-    const diff = toNum(b.days) - toNum(a.days);
-    return diff !== 0 ? diff : new Date(b.updated_at??0).getTime() - new Date(a.updated_at??0).getTime();
-  }) : [];
+  const sales = rawSales ? [...rawSales].sort((a, b) =>
+    (a.display_order ?? 9999) - (b.display_order ?? 9999)
+  ) : [];
 
   const agentName = settings?.agent_name || "Ed Scanlan";
   const agentPhone = settings?.agent_phone || "021 814 578";
@@ -77,7 +83,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ s
           {/* Form — centred on right half */}
           <div className="w-full max-w-7xl mx-auto relative z-20 flex flex-col lg:flex-row items-center justify-end h-full pt-16 pb-10">
             <div className="w-full md:w-[540px] lg:w-[600px] shrink-0 my-6 lg:my-0 lg:mr-32">
-              <LeadGenForm suburb={suburb} medium={medium} />
+              <LeadGenForm suburb={suburb} medium={medium} source={source} />
             </div>
           </div>
         </div>
@@ -175,7 +181,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ s
         <section id="recent-sales" className="bg-slate-50 py-24 px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16 space-y-4">
-              <h2 className="text-4xl md:text-5xl font-black text-slate-900">Proven Hibiscus Coast Recent Results</h2>
+              <h2 className="text-4xl md:text-5xl font-black text-slate-900">Local Sales — Hibiscus Coast</h2>
               <p className="text-slate-500 text-xl max-w-3xl mx-auto font-medium">We leverage smart technology and premium marketing to achieve top dollar for our clients.</p>
             </div>
 
@@ -191,23 +197,16 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ s
                       priority={i < 3}
                       className="object-cover group-hover:scale-105 transition-transform duration-700"
                     />
-                    {/* SOLD diagonal band */}
+                    {/* SOLD diagonal banner with month */}
                     <div className="absolute inset-0 overflow-hidden pointer-events-none">
                       <div
-                        className="absolute bg-[#FF4753] flex items-center justify-center"
-                        style={{ width: '220%', height: '80px', top: '2%', left: '-30%', transform: 'rotate(45deg)' }}
+                        className="absolute bg-[#FF4753] flex flex-col items-center justify-center"
+                        style={{ width: '220%', height: '120px', top: '-5%', left: '-30%', transform: 'rotate(45deg)', gap: '2px' }}
                       >
                         <span style={{ fontStyle: 'italic', fontFamily: 'var(--font-source-serif)', fontWeight: 400 }} className="text-white text-4xl tracking-wide">Sold</span>
+                        {sale.days && <span style={{ fontStyle: 'italic', fontFamily: 'var(--font-source-serif)', fontWeight: 400 }} className="text-white text-lg tracking-wide">{abbrevMonth(sale.days)}</span>}
                       </div>
                     </div>
-                    {/* Month tag */}
-                    {sale.days && (
-                      <div className="absolute top-4 left-4 bg-[#FF4753] px-4 py-1.5 rounded-full shadow-md">
-                        <span style={{ fontStyle: 'italic', fontFamily: 'var(--font-source-serif)', fontWeight: 400 }} className="text-sm text-white">
-                          {sale.days}
-                        </span>
-                      </div>
-                    )}
                   </div>
                   <div className="p-5">
                     <p className="font-bold text-lg leading-snug mb-4 text-balance text-white">
