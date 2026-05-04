@@ -195,7 +195,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ s
                 <div key={i} className="bg-[#373D40] rounded-2xl overflow-hidden shadow-xl group relative">
                   <div className="relative h-64 w-full overflow-hidden">
                     <Image
-                      src={sale.image}
+                      src={sale.image!}
                       alt={sale.address}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 384px"

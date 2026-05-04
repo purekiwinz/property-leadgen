@@ -15,6 +15,7 @@ declare global {
   interface Window {
     gtag?: (command: string, action: string, params?: Record<string, unknown>) => void;
     fbq?: (command: string, action: string, params?: Record<string, unknown>) => void;
+    lintrk?: (action: string, params: Record<string, unknown>) => void;
   }
 }
 

@@ -391,7 +391,7 @@ export default function AdminDashboard() {
                   <div className="w-full md:w-56 shrink-0 space-y-2">
                     <div className="aspect-video relative rounded-xl overflow-hidden bg-slate-100">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={sale.image} alt={sale.address} className="w-full h-full object-cover" />
+                      {sale.image && <img src={sale.image} alt={sale.address} className="w-full h-full object-cover" />}
                     </div>
                     <input
                       type="file"

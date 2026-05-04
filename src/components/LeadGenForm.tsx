@@ -5,14 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, User, Mail, Phone, Home, ShieldCheck, CheckCircle2, Loader2 } from "lucide-react";
 import AddressAutocomplete from "./AddressAutocomplete";
 
-declare global {
-  interface Window {
-    fbq?: (...args: unknown[]) => void;
-    gtag?: (...args: unknown[]) => void;
-    lintrk?: (action: string, params: unknown) => void;
-  }
-}
-
 type FormData = {
   address: string;
   timeline: string;
@@ -190,7 +182,8 @@ export default function LeadGenForm({ suburb = '', medium = '', source = '' }: {
       setStep(5);
     } catch (error: unknown) {
       console.error("Submission error:", error);
-      setSubmitError(`Error: ${error.message || "There was an issue submitting your request."}`);
+      const message = error instanceof Error ? error.message : "There was an issue submitting your request.";
+      setSubmitError(`Error: ${message}`);
     } finally {
       setIsSubmitting(false);
     }
