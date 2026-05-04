@@ -144,6 +144,9 @@ SUPABASE_SERVICE_ROLE_KEY=          # Used in /api/upload-image (server-only)
 NEXT_PUBLIC_MAPBOX_TOKEN=
 NEXT_PUBLIC_META_PIXEL_ID=
 NEXT_PUBLIC_LINKEDIN_PARTNER_ID=
+NEXT_PUBLIC_LINKEDIN_CONVERSION_ID=
+NEXT_PUBLIC_GOOGLE_ADS_ID=
+NEXT_PUBLIC_GA_ID=
 ```
 
 ### Supabase Edge Function Secrets
@@ -160,7 +163,7 @@ META_WEBHOOK_VERIFY_TOKEN=          # For meta-webhook verification
 ## Deployment Pipeline
 
 1. **Build & push Docker image:**
-   `NEXT_PUBLIC_` vars must be passed as build args — they are baked into the bundle at build time, not read at runtime.
+   **CRITICAL:** `NEXT_PUBLIC_` vars MUST be passed as build args (`ARG` in `Dockerfile` + `--build-arg` in CI) — they are baked into the bundle at build time, not read at runtime. If you add a new `NEXT_PUBLIC_` tracking ID, you must update `Dockerfile`, `.github/workflows/deploy.yml`, and `deploy.sh`.
    ```bash
    docker buildx build --platform linux/amd64 \
      --build-arg NEXT_PUBLIC_SUPABASE_URL=https://wbncgzpzctoqwzbrbfdg.supabase.co \
@@ -189,6 +192,12 @@ META_WEBHOOK_VERIFY_TOKEN=          # For meta-webhook verification
 ---
 
 ## Key Patterns & Decisions
+
+### Next.js 16, Turbopack, and Docker
+- **Turbopack Workspace Root:** Set `turbopack: { root: __dirname }` in `next.config.ts`. This prevents Turbopack from failing to find the correct project root in subdirectories/workspaces.
+- **Python Virtual Environments:** Name your Python virtual environment `.venv`. If it's named `venv`, Turbopack may scan it, encounter broken symlinks (common when transferring/copying), and crash the build.
+- **Tailwind CSS v4 in Docker:** Do NOT set an explicit `base: __dirname` inside `postcss.config.mjs` for the `@tailwindcss/postcss` plugin. While it helps local dev, it breaks Tailwind's file scanner when building inside a Docker container (where the path is `/app`), resulting in empty CSS and unstyled pages.
+- **Middleware Deprecation:** Next.js 16 deprecates `middleware.ts`. Use `src/proxy.ts` and export a function named `proxy` instead of `middleware`.
 
 ### Form (LeadGenForm.tsx)
 - 5-step multi-step quiz with Framer Motion `AnimatePresence` transitions
