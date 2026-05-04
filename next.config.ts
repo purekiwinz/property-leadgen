@@ -4,6 +4,10 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   serverExternalPackages: ['puppeteer-core', 'qrcode'],
   allowedDevOrigins: ['127.0.0.1', 'localhost'],
+  // @ts-expect-error - turbopack key is used in Next.js 15+ for workspace root
+  turbopack: {
+    root: typeof process !== 'undefined' ? process.cwd() : '.',
+  },
   images: {
     remotePatterns: [
       {

@@ -5,19 +5,10 @@ import { supabase } from "@/lib/supabase";
 import { List, Users, LogOut, Save, Trash2, Upload, Link2, QrCode, Copy, ChevronDown, ChevronUp, Plus, ExternalLink } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { Session } from "@supabase/supabase-js";
+import { Lead, Sale, Link, LinkClick } from "@/types/database";
 
-const MONTHS_LONG = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-
-function parseSoldMonth(days: string | null): number {
-  if (!days) return 0;
-  const [mon, yr] = days.split(' ');
-  const m = MONTHS_LONG.indexOf(mon);
-  const y = parseInt(yr);
-  if (m === -1 || isNaN(y)) return 0;
-  return y * 12 + m;
-}
-
-function sortSales(list: any[]): any[] {
+function sortSales(list: Sale[]): Sale[] {
   return [...list].sort((a, b) =>
     (a.display_order ?? 9999) - (b.display_order ?? 9999)
   );
@@ -25,7 +16,7 @@ function sortSales(list: any[]): any[] {
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const [session, setSession] = useState<any>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [authEmail, setAuthEmail] = useState("");
   const [authPassword, setAuthPassword] = useState("");
   const [authError, setAuthError] = useState("");
@@ -34,18 +25,18 @@ export default function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(true);
 
   // Data states
-  const [leads, setLeads] = useState<any[]>([]);
-  const [sales, setSales] = useState<any[]>([]);
-  const [links, setLinks] = useState<any[]>([]);
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [sales, setSales] = useState<Sale[]>([]);
+  const [links, setLinks] = useState<Link[]>([]);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [uploadingId, setUploadingId] = useState<string | null>(null);
   const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
 
   // Links state
-  const [linkForm, setLinkForm] = useState<any | null>(null);
+  const [linkForm, setLinkForm] = useState<Partial<Link> | null>(null);
   const [linkSaving, setLinkSaving] = useState(false);
   const [expandedLinkId, setExpandedLinkId] = useState<string | null>(null);
-  const [linkClicks, setLinkClicks] = useState<Record<string, any[]>>({});
+  const [linkClicks, setLinkClicks] = useState<Record<string, LinkClick[]>>({});
   const [loadingClicks, setLoadingClicks] = useState<string | null>(null);
 
   const fetchData = async () => {
@@ -144,7 +135,7 @@ export default function AdminDashboard() {
     setExpandedLinkId(linkId);
   };
 
-  const downloadQR = async (link: any) => {
+  const downloadQR = async (link: Link) => {
     const shortUrl = `${window.location.origin}/links/${link.code}`;
     const res = await fetch('/api/links/qr', {
       method: 'POST',
@@ -163,7 +154,7 @@ export default function AdminDashboard() {
     navigator.clipboard.writeText(`${window.location.origin}/links/${code}`);
   };
 
-  const newLinkDefaults = () => ({
+  const newLinkDefaults = (): Partial<Link> => ({
     code: `qr${Math.floor(1000 + Math.random() * 9000)}`,
     label: '',
     destination_url: '',
@@ -194,16 +185,16 @@ export default function AdminDashboard() {
     setSales(sales.map(s => s.id === id ? { ...s, [field]: value } : s));
   };
 
-  const saveSale = async (sale: any) => {
+  const saveSale = async (sale: Sale) => {
     const { error } = await supabase.from('recent_sales').update({
       address: sale.address,
       days: sale.days,
-      beds: sale.beds ? parseInt(sale.beds) : null,
-      baths: sale.baths ? parseFloat(sale.baths) : null,
+      beds: sale.beds,
+      baths: sale.baths,
       parking: sale.parking,
       sale_method: sale.sale_method,
       image: sale.image,
-      display_order: sale.display_order ? parseInt(sale.display_order) : null,
+      display_order: sale.display_order,
     }).eq('id', sale.id);
 
     if (error) {
@@ -232,8 +223,8 @@ export default function AdminDashboard() {
       const { error } = await supabase.from('recent_sales').update({ image: json.publicUrl }).eq('id', saleId);
       if (error) throw new Error("Image uploaded but failed to save: " + error.message);
       setSales(sales.map(s => s.id === saleId ? { ...s, image: json.publicUrl } : s));
-    } catch (err: any) {
-      alert("Upload failed: " + err.message);
+    } catch (err) {
+      alert("Upload failed: " + (err as Error).message);
     } finally {
       setUploadingId(null);
     }
@@ -796,7 +787,7 @@ export default function AdminDashboard() {
                                       </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-200">
-                                      {(linkClicks[link.id] || []).map((click: any) => (
+                                      {(linkClicks[link.id] || []).map((click: LinkClick) => (
                                         <tr key={click.id} className="text-slate-600">
                                           <td className="py-1.5 pr-4 whitespace-nowrap font-medium">
                                             {new Date(click.clicked_at).toLocaleString('en-NZ', { dateStyle: 'short', timeStyle: 'short' })}

@@ -4,6 +4,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 const VERIFY_TOKEN = Deno.env.get("META_WEBHOOK_VERIFY_TOKEN")
 const PAGE_ACCESS_TOKEN = Deno.env.get("META_PAGE_ACCESS_TOKEN")
 
+interface MetaFieldData {
+  name: string;
+  values: string[];
+}
+
 serve(async (req) => {
   const url = new URL(req.url)
 
@@ -49,7 +54,7 @@ serve(async (req) => {
               // Extract field values dynamically based on what you ask in your form
               let address = '', timeline = '', buying_next = '', first_name = '', last_name = '', email = '', phone = '';
               
-              leadData.field_data.forEach((field: any) => {
+              leadData.field_data.forEach((field: MetaFieldData) => {
                 const name = field.name.toLowerCase();
                 const value = field.values[0];
                 

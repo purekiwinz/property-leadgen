@@ -6,6 +6,12 @@ import { useEffect, useState, useRef } from "react";
 // Centre point used as proximity fallback when no user location
 const HC_CENTRE = "174.6955,-36.6016";
 
+interface MapboxFeature {
+  id: string;
+  place_name: string;
+  [key: string]: unknown;
+}
+
 export default function AddressAutocomplete(props: {
   value: string;
   onChange: (val: string) => void;
@@ -13,7 +19,7 @@ export default function AddressAutocomplete(props: {
   placeholder?: string;
 }) {
   const [inputValue, setInputValue] = useState(props.value);
-  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [suggestions, setSuggestions] = useState<MapboxFeature[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [locating, setLocating] = useState(false);
@@ -33,7 +39,6 @@ export default function AddressAutocomplete(props: {
       () => setLocating(false),
       { timeout: 8000 }
     );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

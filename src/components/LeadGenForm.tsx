@@ -4,7 +4,14 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, User, Mail, Phone, Home, ShieldCheck, CheckCircle2, Loader2 } from "lucide-react";
 import AddressAutocomplete from "./AddressAutocomplete";
-import { supabase } from "@/lib/supabase";
+
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void;
+    gtag?: (...args: unknown[]) => void;
+    lintrk?: (action: string, params: unknown) => void;
+  }
+}
 
 type FormData = {
   address: string;
@@ -45,8 +52,8 @@ export default function LeadGenForm({ suburb = '', medium = '', source = '' }: {
   const [step, setStep] = useState(1);
 
   useEffect(() => {
-    if (suburb && typeof window !== 'undefined' && (window as any).fbq) {
-      (window as any).fbq('track', 'ViewContent', { content_name: suburb, content_category: 'suburb' });
+    if (suburb && typeof window !== 'undefined' && window.fbq) {
+      window.fbq('track', 'ViewContent', { content_name: suburb, content_category: 'suburb' });
     }
   }, [suburb]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -77,22 +84,22 @@ export default function LeadGenForm({ suburb = '', medium = '', source = '' }: {
     if (!val) return;
     
     if (typeof window !== 'undefined') {
-      if ((window as any).fbq) {
-        (window as any).fbq('track', 'Search', { search_string: val, content_category: 'property_address' });
+      if (window.fbq) {
+        window.fbq('track', 'Search', { search_string: val, content_category: 'property_address' });
       }
-      if ((window as any).gtag) {
-        (window as any).gtag('event', 'search', { search_term: val });
+      if (window.gtag) {
+        window.gtag('event', 'search', { search_term: val });
       }
     }
 
     if (isHibiscusCoast(val)) {
       setShowAreaWarning(false);
       if (typeof window !== 'undefined') {
-        if ((window as any).fbq) {
-          (window as any).fbq('track', 'Contact', { content_name: suburb || 'unknown', content_category: 'appraisal_form' });
+        if (window.fbq) {
+          window.fbq('track', 'Contact', { content_name: suburb || 'unknown', content_category: 'appraisal_form' });
         }
-        if ((window as any).gtag) {
-          (window as any).gtag('event', 'begin_checkout', { 
+        if (window.gtag) {
+          window.gtag('event', 'begin_checkout', { 
             coupon: suburb || 'none',
             items: [{ item_name: 'Appraisal Request', item_category: 'form_start' }]
           });
@@ -117,8 +124,8 @@ export default function LeadGenForm({ suburb = '', medium = '', source = '' }: {
       ? crypto.randomUUID()
       : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
-    if (typeof window !== 'undefined' && (window as any).fbq) {
-      (window as any).fbq('track', 'SubmitApplication', { content_name: suburb || 'unknown', content_category: 'appraisal_form', eventID: eventId });
+    if (typeof window !== 'undefined' && window.fbq) {
+      window.fbq('track', 'SubmitApplication', { content_name: suburb || 'unknown', content_category: 'appraisal_form', eventID: eventId });
     }
 
     try {
@@ -147,25 +154,25 @@ export default function LeadGenForm({ suburb = '', medium = '', source = '' }: {
       }
 
       if (typeof window !== 'undefined') {
-        if ((window as any).fbq) {
-          (window as any).fbq('track', 'Lead', suburb
+        if (window.fbq) {
+          window.fbq('track', 'Lead', suburb
             ? { content_name: suburb, content_category: 'suburb', eventID: eventId }
             : { eventID: eventId });
-          (window as any).fbq('track', 'CompleteRegistration', { content_name: suburb || 'unknown', content_category: 'appraisal_form', eventID: `${eventId}-cr` });
+          window.fbq('track', 'CompleteRegistration', { content_name: suburb || 'unknown', content_category: 'appraisal_form', eventID: `${eventId}-cr` });
         }
 
-        if ((window as any).gtag) {
+        if (window.gtag) {
           const googleAdsId = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
           const gaId = process.env.NEXT_PUBLIC_GA_ID;
           
           // Google Ads conversion
           if (googleAdsId) {
-            (window as any).gtag('event', 'generate_lead', { send_to: googleAdsId });
+            window.gtag('event', 'generate_lead', { send_to: googleAdsId });
           }
           
           // GA4 event
           if (gaId) {
-            (window as any).gtag('event', 'generate_lead', {
+            window.gtag('event', 'generate_lead', {
               transaction_id: eventId,
               value: 0,
               currency: 'NZD',
@@ -176,12 +183,12 @@ export default function LeadGenForm({ suburb = '', medium = '', source = '' }: {
       }
 
       const linkedinConversionId = process.env.NEXT_PUBLIC_LINKEDIN_CONVERSION_ID;
-      if (linkedinConversionId && typeof window !== 'undefined' && (window as any).lintrk) {
-        (window as any).lintrk('track', { conversion_id: parseInt(linkedinConversionId, 10) });
+      if (linkedinConversionId && typeof window !== 'undefined' && window.lintrk) {
+        window.lintrk('track', { conversion_id: parseInt(linkedinConversionId, 10) });
       }
 
       setStep(5);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Submission error:", error);
       setSubmitError(`Error: ${error.message || "There was an issue submitting your request."}`);
     } finally {
@@ -304,12 +311,12 @@ export default function LeadGenForm({ suburb = '', medium = '', source = '' }: {
                     onClick={() => {
                       updateForm("timeline", time);
                       if (typeof window !== 'undefined') {
-                        if ((window as any).fbq) {
-                          (window as any).fbq('track', 'Schedule', { content_name: time, content_category: 'appraisal_timeline', suburb: suburb || 'unknown' });
-                          (window as any).fbq('trackCustom', 'FormStep', { step_name: 'selling_timeline', value: time, suburb: suburb || 'unknown' });
+                        if (window.fbq) {
+                          window.fbq('track', 'Schedule', { content_name: time, content_category: 'appraisal_timeline', suburb: suburb || 'unknown' });
+                          window.fbq('trackCustom', 'FormStep', { step_name: 'selling_timeline', value: time, suburb: suburb || 'unknown' });
                         }
-                        if ((window as any).gtag) {
-                          (window as any).gtag('event', 'select_content', {
+                        if (window.gtag) {
+                          window.gtag('event', 'select_content', {
                             content_type: 'selling_timeline',
                             item_id: time
                           });
@@ -355,11 +362,11 @@ export default function LeadGenForm({ suburb = '', medium = '', source = '' }: {
                     onClick={() => {
                       updateForm("buyingNext", option);
                       if (typeof window !== 'undefined') {
-                        if ((window as any).fbq) {
-                          (window as any).fbq('trackCustom', 'FormStep', { step_name: 'buying_intent', value: option, suburb: suburb || 'unknown' });
+                        if (window.fbq) {
+                          window.fbq('trackCustom', 'FormStep', { step_name: 'buying_intent', value: option, suburb: suburb || 'unknown' });
                         }
-                        if ((window as any).gtag) {
-                          (window as any).gtag('event', 'select_content', {
+                        if (window.gtag) {
+                          window.gtag('event', 'select_content', {
                             content_type: 'buying_intent',
                             item_id: option
                           });
@@ -472,8 +479,8 @@ export default function LeadGenForm({ suburb = '', medium = '', source = '' }: {
                     checked={formData.optInMarketing}
                     onChange={(e) => {
                       updateForm("optInMarketing", e.target.checked);
-                      if (e.target.checked && typeof window !== 'undefined' && (window as any).fbq) {
-                        (window as any).fbq('track', 'Subscribe', { content_name: "Ed's Quarterly Market Update", content_category: 'newsletter' });
+                      if (e.target.checked && typeof window !== 'undefined' && window.fbq) {
+                        window.fbq('track', 'Subscribe', { content_name: "Ed's Quarterly Market Update", content_category: 'newsletter' });
                       }
                     }}
                     className="mt-1 w-5 h-5 shrink-0 accent-[#FF4753] cursor-pointer"

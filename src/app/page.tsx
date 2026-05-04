@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Award, Clock, MapPin, Star } from "lucide-react";
 import { BedroomIcon, BathroomIcon, CarParkIcon } from "@/components/PropertyIcons";
 import { supabase } from "@/lib/supabase";
+import { Sale } from "@/types/database";
 
 export const revalidate = 300; // Revalidate every 5 minutes
 
@@ -181,7 +182,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ s
         </section>
 
         {/* Recent Sales Grid — only shown when there are sales in the database */}
-        {sales && sales.filter((s: any) => s.image).length > 0 && (
+        {sales && sales.filter((s: Sale) => s.image).length > 0 && (
         <section id="recent-sales" className="bg-slate-50 py-24 px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16 space-y-4">
@@ -190,7 +191,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ s
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {sales.filter((s: any) => s.image).map((sale: any, i: number) => (
+              {sales.filter((s: Sale) => s.image).map((sale: Sale, i: number) => (
                 <div key={i} className="bg-[#373D40] rounded-2xl overflow-hidden shadow-xl group relative">
                   <div className="relative h-64 w-full overflow-hidden">
                     <Image
