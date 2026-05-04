@@ -154,6 +154,8 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ s
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                 <a
                   href={`tel:${agentPhone}`}
+                  data-analytics-event="click"
+                  data-analytics-label="call_agent_about"
                   className="flex items-center gap-3 bg-[#FF4753] hover:brightness-110 text-white font-bold px-8 py-4 rounded-2xl text-lg transition-all shadow-lg w-full sm:w-auto justify-center"
                 >
                   <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor">
@@ -163,6 +165,8 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ s
                 </a>
                 <a
                   href={`mailto:${agentEmail}`}
+                  data-analytics-event="click"
+                  data-analytics-label="email_agent_about"
                   className="flex items-center gap-3 bg-white hover:bg-slate-50 text-[#FF4753] font-bold px-8 py-4 rounded-2xl text-lg transition-all shadow-lg border-2 border-[#FF4753] w-full sm:w-auto justify-center"
                 >
                   <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -292,10 +296,18 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ s
             <div className="flex items-center gap-5 shrink-0">
               <div className="flex flex-col items-start gap-1.5">
                 <p className="text-white font-black text-lg">{agentName}</p>
-                <a href={`tel:${agentPhone}`} className="text-white font-semibold text-sm hover:text-white/70 transition-all">
+                <a 
+                  href={`tel:${agentPhone}`} 
+                  data-analytics-label="footer_call_link"
+                  className="text-white font-semibold text-sm hover:text-white/70 transition-all"
+                >
                   {agentPhone}
                 </a>
-                <a href={`mailto:${agentEmail}`} className="text-white font-semibold text-sm hover:text-white/70 transition-all">
+                <a 
+                  href={`mailto:${agentEmail}`} 
+                  data-analytics-label="footer_email_link"
+                  className="text-white font-semibold text-sm hover:text-white/70 transition-all"
+                >
                   {agentEmail}
                 </a>
                 <p className="text-slate-300 text-xs">Meros Group Realty Licenced REAA (2008)</p>
@@ -319,9 +331,17 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ s
           <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-sm text-white">
             <p className="text-center sm:text-left whitespace-nowrap">&copy; {new Date().getFullYear()} {agentName}</p>
             <div className="flex items-center gap-4">
-              <Link href="/privacy" className="hover:text-white/70 transition-colors">Privacy Policy</Link>
-              <Link href="/terms" className="hover:text-white/70 transition-colors">Terms of Service</Link>
-              <a href="https://www.rea.govt.nz/buyers-and-sellers/read-our-guides/" target="_blank" rel="noopener noreferrer" className="hover:text-white/70 transition-colors">REA Guide</a>
+              <Link href="/privacy" data-analytics-label="footer_privacy" className="hover:text-white/70 transition-colors">Privacy Policy</Link>
+              <Link href="/terms" data-analytics-label="footer_terms" className="hover:text-white/70 transition-colors">Terms of Service</Link>
+              <a 
+                href="https://www.rea.govt.nz/buyers-and-sellers/read-our-guides/" 
+                data-analytics-label="footer_rea_guide"
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="hover:text-white/70 transition-colors"
+              >
+                REA Guide
+              </a>
             </div>
           </div>
         </div>

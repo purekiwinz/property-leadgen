@@ -75,13 +75,28 @@ export default function LeadGenForm({ suburb = '', medium = '', source = '' }: {
   const handleAddressNext = (address?: string) => {
     const val = address ?? formData.address;
     if (!val) return;
-    if (typeof window !== 'undefined' && (window as any).fbq) {
-      (window as any).fbq('track', 'Search', { search_string: val, content_category: 'property_address' });
+    
+    if (typeof window !== 'undefined') {
+      if ((window as any).fbq) {
+        (window as any).fbq('track', 'Search', { search_string: val, content_category: 'property_address' });
+      }
+      if ((window as any).gtag) {
+        (window as any).gtag('event', 'search', { search_term: val });
+      }
     }
+
     if (isHibiscusCoast(val)) {
       setShowAreaWarning(false);
-      if (typeof window !== 'undefined' && (window as any).fbq) {
-        (window as any).fbq('track', 'Contact', { content_name: suburb || 'unknown', content_category: 'appraisal_form' });
+      if (typeof window !== 'undefined') {
+        if ((window as any).fbq) {
+          (window as any).fbq('track', 'Contact', { content_name: suburb || 'unknown', content_category: 'appraisal_form' });
+        }
+        if ((window as any).gtag) {
+          (window as any).gtag('event', 'begin_checkout', { 
+            coupon: suburb || 'none',
+            items: [{ item_name: 'Appraisal Request', item_category: 'form_start' }]
+          });
+        }
       }
       nextStep();
     } else {
@@ -131,17 +146,32 @@ export default function LeadGenForm({ suburb = '', medium = '', source = '' }: {
         throw new Error(json.error || "Failed to save lead");
       }
 
-      if (typeof window !== 'undefined' && (window as any).fbq) {
-        (window as any).fbq('track', 'Lead', suburb
-          ? { content_name: suburb, content_category: 'suburb', eventID: eventId }
-          : { eventID: eventId });
-        (window as any).fbq('track', 'CompleteRegistration', { content_name: suburb || 'unknown', content_category: 'appraisal_form', eventID: `${eventId}-cr` });
-      }
+      if (typeof window !== 'undefined') {
+        if ((window as any).fbq) {
+          (window as any).fbq('track', 'Lead', suburb
+            ? { content_name: suburb, content_category: 'suburb', eventID: eventId }
+            : { eventID: eventId });
+          (window as any).fbq('track', 'CompleteRegistration', { content_name: suburb || 'unknown', content_category: 'appraisal_form', eventID: `${eventId}-cr` });
+        }
 
-      if (typeof window !== 'undefined' && (window as any).gtag) {
-        const googleAdsId = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
-        if (googleAdsId) {
-          (window as any).gtag('event', 'generate_lead', { send_to: googleAdsId });
+        if ((window as any).gtag) {
+          const googleAdsId = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
+          const gaId = process.env.NEXT_PUBLIC_GA_ID;
+          
+          // Google Ads conversion
+          if (googleAdsId) {
+            (window as any).gtag('event', 'generate_lead', { send_to: googleAdsId });
+          }
+          
+          // GA4 event
+          if (gaId) {
+            (window as any).gtag('event', 'generate_lead', {
+              transaction_id: eventId,
+              value: 0,
+              currency: 'NZD',
+              items: [{ item_name: 'Appraisal Request', item_category: 'form_complete', item_variant: suburb || 'unknown' }]
+            });
+          }
         }
       }
 
@@ -214,7 +244,7 @@ export default function LeadGenForm({ suburb = '', medium = '', source = '' }: {
                 </div>
               </div>
 
-              <div>
+              <div data-analytics-step="1_address">
                 <AddressAutocomplete
                   value={formData.address}
                   onChange={(val) => { updateForm("address", val); setShowAreaWarning(false); }}
@@ -267,15 +297,23 @@ export default function LeadGenForm({ suburb = '', medium = '', source = '' }: {
                 <p className="text-white/60 text-sm sm:text-base font-medium">This helps Ed prioritize your report.</p>
               </div>
 
-              <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
+              <div className="grid grid-cols-2 gap-2.5 sm:gap-4" data-analytics-step="2_timeline">
                 {["ASAP", "3-6 Months", "6-12 Months", "Just curious"].map((time) => (
                   <button
                     key={time}
                     onClick={() => {
                       updateForm("timeline", time);
-                      if (typeof window !== 'undefined' && (window as any).fbq) {
-                        (window as any).fbq('track', 'Schedule', { content_name: time, content_category: 'appraisal_timeline', suburb: suburb || 'unknown' });
-                        (window as any).fbq('trackCustom', 'FormStep', { step_name: 'selling_timeline', value: time, suburb: suburb || 'unknown' });
+                      if (typeof window !== 'undefined') {
+                        if ((window as any).fbq) {
+                          (window as any).fbq('track', 'Schedule', { content_name: time, content_category: 'appraisal_timeline', suburb: suburb || 'unknown' });
+                          (window as any).fbq('trackCustom', 'FormStep', { step_name: 'selling_timeline', value: time, suburb: suburb || 'unknown' });
+                        }
+                        if ((window as any).gtag) {
+                          (window as any).gtag('event', 'select_content', {
+                            content_type: 'selling_timeline',
+                            item_id: time
+                          });
+                        }
                       }
                       nextStep();
                     }}
@@ -310,14 +348,22 @@ export default function LeadGenForm({ suburb = '', medium = '', source = '' }: {
                 <p className="text-white/60 text-sm sm:text-base font-medium">Ed can help source your next home off-market.</p>
               </div>
 
-              <div className="grid grid-cols-1 gap-2.5 sm:gap-4">
+              <div className="grid grid-cols-1 gap-2.5 sm:gap-4" data-analytics-step="3_buying_next">
                 {["Yes, I need to buy", "No, just selling for now"].map((option) => (
                   <button
                     key={option}
                     onClick={() => {
                       updateForm("buyingNext", option);
-                      if (typeof window !== 'undefined' && (window as any).fbq) {
-                        (window as any).fbq('trackCustom', 'FormStep', { step_name: 'buying_intent', value: option, suburb: suburb || 'unknown' });
+                      if (typeof window !== 'undefined') {
+                        if ((window as any).fbq) {
+                          (window as any).fbq('trackCustom', 'FormStep', { step_name: 'buying_intent', value: option, suburb: suburb || 'unknown' });
+                        }
+                        if ((window as any).gtag) {
+                          (window as any).gtag('event', 'select_content', {
+                            content_type: 'buying_intent',
+                            item_id: option
+                          });
+                        }
                       }
                       nextStep();
                     }}
@@ -352,7 +398,7 @@ export default function LeadGenForm({ suburb = '', medium = '', source = '' }: {
                 <p className="text-white/60 text-sm sm:text-base font-medium text-balance">Ed will prepare your appraisal personally.</p>
               </div>
 
-              <form onSubmit={submitForm} className="space-y-2.5 sm:space-y-4">
+              <form onSubmit={submitForm} className="space-y-2.5 sm:space-y-4" data-analytics-step="4_submit">
                 <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
                   <div>
                     <label className="block text-xs sm:text-sm font-bold text-white/70 mb-1 ml-1">First Name</label>

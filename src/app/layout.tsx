@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins, Source_Serif_4 } from "next/font/google";
 import Script from "next/script";
+import AnalyticsListener from "@/components/AnalyticsListener";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -74,12 +75,14 @@ export default function RootLayout({
   const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
   const linkedinPartnerId = process.env.NEXT_PUBLIC_LINKEDIN_PARTNER_ID;
   const googleAdsId = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
+  const gaId = process.env.NEXT_PUBLIC_GA_ID;
 
   return (
     <html lang="en">
       <body
         className={`${poppins.variable} ${sourceSerif.variable} antialiased`}
       >
+        <AnalyticsListener />
         {/* Meta Pixel Code */}
         {pixelId && (
           <>
@@ -105,19 +108,20 @@ export default function RootLayout({
           </>
         )}
 
-        {/* Google Ads — global site tag (remarketing + conversion tracking) */}
-        {googleAdsId && (
+        {/* Google Analytics & Ads — global site tag (gtag.js) */}
+        {(gaId || googleAdsId) && (
           <>
             <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${googleAdsId}`}
+              src={`https://www.googletagmanager.com/gtag/js?id=${gaId || googleAdsId}`}
               strategy="afterInteractive"
             />
-            <Script id="google-ads" strategy="afterInteractive">
+            <Script id="google-analytics" strategy="afterInteractive">
               {`
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
-                gtag('config', '${googleAdsId}');
+                ${gaId ? `gtag('config', '${gaId}');` : ''}
+                ${googleAdsId ? `gtag('config', '${googleAdsId}');` : ''}
               `}
             </Script>
           </>
